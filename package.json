@@ -1,7 +1,8 @@
 {
 	"name": "eap-web-portal",
 	"version": "0.1.0",
-	"private": true,
+	"private": false,
+	"homepage": "https://kiaramelocoton.com/eap-customer-onboarding/",
 	"dependencies": {
 		"@emotion/react": "^11.11.4",
 		"@emotion/styled": "^11.11.5",
@@ -35,8 +36,7 @@
 		"eject": "react-scripts eject",
 		"lint": "eslint src/**/*.ts src/**/*.tsx --fix",
 		"predeploy": "npm run build",
-		"deploy": "gh-pages -d build",
-		"homepage": "https://kiaramelocoton.com/eap-customer-onboarding/"
+		"deploy": "gh-pages -d build"
 	},
 	"eslintConfig": {
 		"extends": "react-app"
