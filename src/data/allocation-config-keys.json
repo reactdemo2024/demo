@@ -1,0 +1,45 @@
+{
+    "computeDefinition": {
+        "required": {
+            "numberOfMachineFunctions": "number"
+        },
+        "optional": {
+            "subscriptionId": "string",
+            "sku": "string",
+            "requestedNodeLabels": "array"
+        }
+    },
+    "machineFunctionCommon": {
+        "required": {
+            "nameOfMachineFunction": "string"
+        },
+        "optional": {
+            "placementConstraint": "enum",
+            "customAttributeScaleUnit": "string",
+            "customAttributeFormatString": "string",
+            "priority": "enum",
+            "isSectionDeleted": "boolean",
+            "startingScaleUnit": "number",
+            "scaleUnitIncrement": "number"
+        }
+    },
+    "machineFunctionWithMachineGroup": {
+        "required": {
+            "machineGroups": "array"
+        },
+        "optional": {
+            "constraint": {
+                "scaleUnits": [ 
+                    { "numberOfScaleUnits": "number" }, 
+                    { "machinesPerScaleUnit": "number" }
+                ]
+            }
+        }
+    },
+    "machineFunctionWithPartitionSchema": {
+        "required": {
+            "numberOfMachines": "number",
+            "partitionSchema": "array"
+        }
+    }
+}
