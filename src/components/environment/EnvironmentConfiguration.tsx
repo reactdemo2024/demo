@@ -38,12 +38,18 @@ import {
 	putSubscriptions,
 } from '../../store/environment/subscriptionSlice';
 import { EnvType } from '../../enum/environment.enum';
+import { putEncryptionAtHost } from '../../store/environment/encryptionHostSlice';
+import {
+	VMSSCustomTagPayload,
+	putEapVMSSCustomTags,
+} from '../../store/environment/eapVMSSCustomTagSlice';
 
 interface CustomTooltipProps {
 	tooltip: string;
+	size?: number;
 }
 
-const CustomTooltip: React.FC<CustomTooltipProps> = ({ tooltip }) => {
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ tooltip, size }) => {
 	return (
 		<Tooltip
 			title={
@@ -60,7 +66,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ tooltip }) => {
 				},
 			}}
 		>
-			<InfoOutlined sx={{ fontSize: 20 }} />
+			<InfoOutlined sx={{ fontSize: size || 20 }} />
 		</Tooltip>
 	);
 };
@@ -86,6 +92,9 @@ function AzureComputeManagerConfiguration() {
 			<ZoneBalanceConfiguration />
 			<AzureMaintenanceControlConfiguration />
 			<SubscriptionConfiguration />
+			<EncryptionAtHostConfiguration />
+			<RegionalIPV4MFConfiguration />
+			<EapVMSSCustomTagConfiguration />
 		</>
 	);
 }
@@ -475,6 +484,200 @@ function SubscriptionConfiguration() {
 				</Stack>
 				<Button variant='text' onClick={handleAddRow} startIcon={<Add />}>
 					Subscription
+				</Button>
+			</Stack>
+			<>
+				<DataGrid
+					editMode='row'
+					rows={rows}
+					columns={columns}
+					processRowUpdate={(updatedRow) => handleRowUpdate(updatedRow)}
+					onProcessRowUpdateError={handleProcessRowUpdateError}
+					autoHeight
+				/>
+			</>
+		</>
+	);
+}
+
+function EncryptionAtHostConfiguration() {
+	const dispatch = useDispatch();
+	const [allEncryptionAtHost, setAllEncryptionAtHost] = useState(false);
+	const [encryptionAtHostForm, setEncryptionAtHostForm] = useState('');
+
+	useEffect(() => {
+		if (allEncryptionAtHost) {
+			setEncryptionAtHostForm('*');
+		}
+		dispatch(putEncryptionAtHost(encryptionAtHostForm));
+	}, [allEncryptionAtHost, encryptionAtHostForm, dispatch]);
+
+	const tooltip =
+		'Enter each machine function name, separated by a comma, i.e. MachineFunction1, MachineFunction2';
+
+	return (
+		<>
+			<Stack direction='row' spacing={3} alignItems='center'>
+				<Stack direction='row' spacing={1} alignItems='center'>
+					<h4>Encryption At Host</h4>
+					<CustomTooltip tooltip={tooltip} />
+				</Stack>
+				<FormControlLabel
+					control={
+						<Checkbox
+							checked={allEncryptionAtHost}
+							onChange={(e) => setAllEncryptionAtHost(e.target.checked)}
+							size='small'
+						/>
+					}
+					label='Enable All Machine Functions'
+				/>
+			</Stack>
+			<TextField
+				label='Machine Functions to Enable Encryption at Host'
+				type='text'
+				variant='outlined'
+				value={encryptionAtHostForm}
+				onChange={(e) => setEncryptionAtHostForm(e.target.value)}
+				disabled={allEncryptionAtHost}
+				InputLabelProps={{ shrink: true }}
+				style={{ width: 400 }}
+			/>
+		</>
+	);
+}
+
+function RegionalIPV4MFConfiguration() {
+	const dispatch = useDispatch();
+	const [allRegionalIPV4MF, setAllRegionalIPV4MF] = useState(false);
+	const [regionalIPV4Form, setRegionalIPV4Form] = useState('');
+
+	useEffect(() => {
+		if (allRegionalIPV4MF) {
+			setRegionalIPV4Form('*');
+		}
+		dispatch(putMaintenanceControl(regionalIPV4Form));
+	}, [allRegionalIPV4MF, regionalIPV4Form, dispatch]);
+
+	const tooltip =
+		'Enter each machine function name, separated by a comma, i.e. MachineFunction1, MachineFunction2';
+
+	return (
+		<>
+			<Stack direction='row' spacing={3} alignItems='center'>
+				<Stack direction='row' spacing={1} alignItems='center'>
+					<h4>Regional IPV4</h4>
+					<CustomTooltip tooltip={tooltip} />
+				</Stack>
+				<FormControlLabel
+					control={
+						<Checkbox
+							checked={allRegionalIPV4MF}
+							onChange={(e) => setAllRegionalIPV4MF(e.target.checked)}
+							size='small'
+						/>
+					}
+					label='Enable All Machine Functions'
+				/>
+			</Stack>
+			<TextField
+				label='Machine Functions to Enable Regional IPV4'
+				type='text'
+				variant='outlined'
+				value={regionalIPV4Form}
+				onChange={(e) => setRegionalIPV4Form(e.target.value)}
+				disabled={allRegionalIPV4MF}
+				InputLabelProps={{ shrink: true }}
+				style={{ width: 400 }}
+			/>
+		</>
+	);
+}
+
+function EapVMSSCustomTagConfiguration() {
+	const dispatch = useDispatch();
+	const [rows, setRows] = useState<GridRowsProp>([]);
+	const [id, setId] = useState(0);
+
+	useEffect(() => {
+		dispatch(putEapVMSSCustomTags(rows as VMSSCustomTagPayload[]));
+	}, [dispatch, rows]);
+
+	const handleDeleteRow = (id: GridRowId) => {
+		const updatedRows = rows.filter((row) => row.id !== id);
+		setRows(updatedRows);
+	};
+
+	const handleAddRow = () => {
+		const newRow = {
+			id,
+			jsonName: randomTraderName(),
+			machineFunctionName: randomTraderName(),
+			machineGroupName: randomTraderName(),
+		};
+		setRows([...rows, newRow]);
+		setId(id + 1);
+	};
+
+	const handleRowUpdate = (updatedRow: any) => {
+		setRows((prevRows) => {
+			return prevRows.map((row) =>
+				row.id === updatedRow.id ? updatedRow : row
+			);
+		});
+		return updatedRow;
+	};
+
+	const handleProcessRowUpdateError = (error: any) => {
+		console.error('Row update error:', error);
+	};
+
+	const tooltip = 'Include .json extension in the field, i.e. filename.json';
+
+	const columns: GridColDef[] = [
+		{
+			field: 'jsonName',
+			headerName: 'JSON File',
+			width: 250,
+			editable: true,
+			renderHeader: (params) => (
+				<Stack direction='row' spacing={1} alignItems='center'>
+					<span>{params.colDef.headerName}</span>
+					<CustomTooltip tooltip={tooltip} size={18} />
+				</Stack>
+			),
+		},
+		{
+			field: 'machineFunctionName',
+			headerName: 'Name of Machine Function',
+			width: 300,
+			editable: true,
+		},
+		{
+			field: 'machineGroupName',
+			headerName: 'Name of Machine Group',
+			width: 300,
+			editable: true,
+		},
+		{
+			field: 'actions',
+			headerName: 'Delete',
+			width: 100,
+			renderCell: (params) => (
+				<IconButton onClick={() => handleDeleteRow(params.id)}>
+					<Delete />
+				</IconButton>
+			),
+			editable: false,
+		},
+	];
+
+	return (
+		<>
+			<Stack direction='row' spacing={3} alignItems='center'>
+				<h4>EAP VMSS Custom Tag</h4>
+				<Button variant='text' onClick={handleAddRow} startIcon={<Add />}>
+					VMSS Custom Tag
 				</Button>
 			</Stack>
 			<>

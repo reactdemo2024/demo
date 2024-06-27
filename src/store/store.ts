@@ -7,6 +7,9 @@ import availabilityZoneReducer from './environment/availabilityZoneSlice';
 import maintenanceControlReducer from './environment/maintenanceControlSlice';
 import zoneBalanceReducer from './environment/zoneBalanceSlice';
 import subscriptionReducer from './environment/subscriptionSlice';
+import encryptionHostReducer from './environment/encryptionHostSlice';
+import regionalIPV4Reducer from './environment/regionalIPV4Slice';
+import eapVMSSCustomTagReducer from './environment/eapVMSSCustomTagSlice';
 
 const store = configureStore({
   reducer: {
@@ -20,6 +23,9 @@ const store = configureStore({
     zoneBalances: zoneBalanceReducer,
     maintenanceControl: maintenanceControlReducer,
     subscriptions: subscriptionReducer,
+    hostEncryption: encryptionHostReducer,
+    regionalIPV4: regionalIPV4Reducer,
+    eapVMSSCustomTags: eapVMSSCustomTagReducer,
   },
 });
 

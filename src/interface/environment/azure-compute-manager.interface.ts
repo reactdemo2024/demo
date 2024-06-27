@@ -1,6 +1,7 @@
 import { Subscription } from "react-redux";
 import { AvailabilityZones } from "./availability-zones.interface";
 import { ZoneBalance } from "./zone-balance.interface";
+import { VMSSCustomTag } from "./vmss-custom-tag.interface";
 
 export interface AzureComputeManager {
     availabilityZones?: AvailabilityZones;
@@ -10,11 +11,11 @@ export interface AzureComputeManager {
     // EnableAzureMaintenanceControl=* ; Azure maintenance control is enabled for all machine functions in the environment
     enableAzureMaintenanceControl?: string; // all or specific MFs
     subscriptions: Subscription[];
-
-    // EAPVMSS<json file name>=(comma separated)<machineFunction/machineFunction_machineGroup>
-    eapVmssCustomTag?: string;
     encryptionAtHost?: string; // mfs: EncryptionAtHost=MF1 or all: EncryptionAtHost=*
     regionalIPV4MF?: string; // mfs: RegionalIPV4MF=MF1 or all: RegionalIPV4MF=*
+    // EAPVMSS<json file name>=(comma separated)<machineFunction/machineFunction_machineGroup>
+    eapVMSSCustomTag?: VMSSCustomTag[];
+
     msi?: string; // mfs: MSI='/...'
 
     // TrustedLaunchMachineFunctions=(comma separated)<machineFunction/machineFunction_machineGroup>
