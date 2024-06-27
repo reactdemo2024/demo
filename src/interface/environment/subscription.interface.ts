@@ -1,8 +1,10 @@
+import { EnvType } from "../../enum/environment.enum";
+
 export interface Subscription {
     subscriptionIds?: string;
     environment?: string;
     cluster?: string;
-    autopilotEnvType?: string;
+    autopilotEnvType?: EnvType;
 }
 
 /**

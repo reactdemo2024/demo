@@ -2,8 +2,11 @@ import {
 	Button,
 	Checkbox,
 	Divider,
+	FormControl,
 	FormControlLabel,
 	IconButton,
+	MenuItem,
+	Select,
 	Stack,
 	TextField,
 	Tooltip,
@@ -14,6 +17,7 @@ import {
 	GridRowsProp,
 	GridColDef,
 	GridRowId,
+	GridRenderEditCellParams,
 } from '@mui/x-data-grid';
 import { randomTraderName } from '@mui/x-data-grid-generator';
 import { Add, Delete, Info, InfoOutlined } from '@mui/icons-material';
@@ -33,6 +37,33 @@ import {
 	SubscriptionPayload,
 	putSubscriptions,
 } from '../../store/environment/subscriptionSlice';
+import { EnvType } from '../../enum/environment.enum';
+
+interface CustomTooltipProps {
+	tooltip: string;
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ tooltip }) => {
+	return (
+		<Tooltip
+			title={
+				<Typography sx={{ whiteSpace: 'pre-line', fontSize: 12 }}>
+					{tooltip}
+				</Typography>
+			}
+			PopperProps={{
+				sx: {
+					'& .MuiTooltip-tooltip': {
+						maxWidth: 'none', // Remove the max-width restriction
+						width: 'auto', // Adjust width as needed
+					},
+				},
+			}}
+		>
+			<InfoOutlined sx={{ fontSize: 20 }} />
+		</Tooltip>
+	);
+};
 
 function EnvironmentConfiguration() {
 	return (
@@ -340,7 +371,7 @@ function SubscriptionConfiguration() {
 			subscriptionIds: `${randomTraderName()},${randomTraderName()}`,
 			environment: randomTraderName(),
 			cluster: randomTraderName(),
-			autopilotEnvType: randomTraderName(),
+			autopilotEnvType: '',
 		};
 		setRows([...rows, newRow]);
 		setId(id + 1);
@@ -353,6 +384,21 @@ function SubscriptionConfiguration() {
 			);
 		});
 		return updatedRow;
+	};
+
+	const handleCellUpdate = (params: any, e: any) => {
+		params.api.setEditCellValue({
+			id: params.id,
+			field: params.field,
+			value: e.target.value,
+		});
+		const updatedRows = rows.map((row) => {
+			if (row.id === params.id) {
+				return { ...row, [params.field]: e.target.value };
+			}
+			return row;
+		});
+		setRows(updatedRows);
 	};
 
 	const handleProcessRowUpdateError = (error: any) => {
@@ -383,6 +429,23 @@ function SubscriptionConfiguration() {
 			headerName: 'Environment Type',
 			width: 200,
 			editable: true,
+			renderEditCell: (params: GridRenderEditCellParams) => (
+				<FormControl fullWidth>
+					<Select
+						value={params.value}
+						onChange={(e) => {
+							handleCellUpdate(params, e);
+						}}
+						size='small'
+					>
+						{Object.values(EnvType).map((type) => (
+							<MenuItem key={type} value={type} sx={{ height: 32 }}>
+								{type}
+							</MenuItem>
+						))}
+					</Select>
+				</FormControl>
+			),
 		},
 		{
 			field: 'actions',
@@ -427,31 +490,5 @@ function SubscriptionConfiguration() {
 		</>
 	);
 }
-
-interface CustomTooltipProps {
-	tooltip: string;
-}
-
-const CustomTooltip: React.FC<CustomTooltipProps> = ({ tooltip }) => {
-	return (
-		<Tooltip
-			title={
-				<Typography sx={{ whiteSpace: 'pre-line', fontSize: 12 }}>
-					{tooltip}
-				</Typography>
-			}
-			PopperProps={{
-				sx: {
-					'& .MuiTooltip-tooltip': {
-						maxWidth: 'none', // Remove the max-width restriction
-						width: 'auto', // Adjust width as needed
-					},
-				},
-			}}
-		>
-			<InfoOutlined sx={{ fontSize: 20 }} />
-		</Tooltip>
-	);
-};
 
 export default EnvironmentConfiguration;

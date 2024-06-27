@@ -1,4 +1,5 @@
-export enum Type {
+export enum EnvType {
+    BLANK = '',
     PRODUCTION = 'Production',
     INTEGRATION = 'INT',
     PRE_PRODUCTION = 'PPE',
