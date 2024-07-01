@@ -113,6 +113,19 @@ const generateEnvironmentIni = () => {
 		} else result += `${cvt.machineFunctionName}\n`;
 	});
 
+	// TrustedLaunchMachineFunction=MF1 or all: TrustedLaunchMachineFunction=*
+	if (trustedLaunchMachineFunctions) {
+		result += `TrustedLaunchMachineFunction=${trustedLaunchMachineFunctions}\n`;
+	}
+
+	if (acceleratedNetworkingEnabledMachineFunctions) {
+		result += `AcceleratedNetworkingEnabledMachineFunctions=${acceleratedNetworkingEnabledMachineFunctions}\n`;
+	}
+
+	if (acceleratedNetworkingInPlaceUpdate) {
+		result += `AcceleratedNetworkingInPlaceUpdate=${acceleratedNetworkingInPlaceUpdate}\n`;
+	}
+
 	// [CustomVMSSExtension.<ExtensionName>]
 	// Type=<VMSS Extension Type>
 	// Publisher=<VMSS Extension Publisher>
@@ -128,19 +141,6 @@ const generateEnvironmentIni = () => {
 			}
 		});
 	});
-
-	// TrustedLaunchMachineFunction=MF1 or all: TrustedLaunchMachineFunction=*
-	if (trustedLaunchMachineFunctions) {
-		result += `TrustedLaunchMachineFunction=${trustedLaunchMachineFunctions}\n`;
-	}
-
-	if (acceleratedNetworkingEnabledMachineFunctions) {
-		result += `AcceleratedNetworkingEnabledMachineFunctions=${acceleratedNetworkingEnabledMachineFunctions}\n`;
-	}
-
-	if (acceleratedNetworkingInPlaceUpdate) {
-		result += `AcceleratedNetworkingInPlaceUpdate=${acceleratedNetworkingInPlaceUpdate}\n`;
-	}
 
 	// [OutboundRule.{Outbound Rule identifier name}]
 	// AllocatedOutboundPorts={number of ports}

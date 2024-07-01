@@ -1,4 +1,4 @@
-import { EnvType, OsType, TooltipText } from "./environment.enum";
+import { EnvType, OsType, TooltipText } from "../enum/environment.enum";
 
 export const availabilityZoneColumns = [
     {

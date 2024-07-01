@@ -43,7 +43,7 @@ function AllocationConfiguration() {
 		<>
 			<h2>Allocation Configuration</h2>
 			<Stack direction='column' spacing={3}>
-				<ComputeDefinitionConfiguration />
+				{/* <ComputeDefinitionConfiguration /> */}
 				<MachineFunctionConfiguration />
 			</Stack>
 		</>
