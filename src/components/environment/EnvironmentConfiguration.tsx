@@ -197,6 +197,7 @@ function ZoneBalanceConfiguration() {
 				header='Zone Balance'
 				buttonHeader='Zone Balance'
 				putDispatch={putZoneBalances}
+				reducer='zoneBalances'
 			/>
 		</>
 	);
@@ -212,6 +213,7 @@ function AzureMaintenanceControlConfiguration() {
 				showApplyToAllCheckbox={true}
 				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
 				tooltip={TooltipText.COMMA_SEPARATED}
+				reducer='maintenanceControl'
 			/>
 		</>
 	);
@@ -226,6 +228,7 @@ function SubscriptionConfiguration() {
 				buttonHeader='Subscription'
 				putDispatch={putSubscriptions}
 				tooltip={TooltipText.SUBSCRIPTION_OPTIONS}
+				reducer='subscriptions'
 			/>
 		</>
 	);
@@ -241,6 +244,7 @@ function EncryptionAtHostConfiguration() {
 				showApplyToAllCheckbox={true}
 				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
 				tooltip={TooltipText.COMMA_SEPARATED}
+				reducer='encryptionAtHost'
 			/>
 		</>
 	);
@@ -256,6 +260,7 @@ function RegionalIPV4MFConfiguration() {
 				showApplyToAllCheckbox={true}
 				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
 				tooltip={TooltipText.COMMA_SEPARATED}
+				reducer='regionalIPV4MF'
 			/>
 		</>
 	);
@@ -269,6 +274,7 @@ function CustomVMSSTagConfiguration() {
 				header='Custom VMSS Tags'
 				buttonHeader='Tag'
 				putDispatch={putCustomVMSSTags}
+				reducer='customVMSSTags'
 			/>
 		</>
 	);
@@ -282,6 +288,7 @@ function CustomVMSSExtensionConfiguration() {
 				header='Custom VMSS Extensions'
 				buttonHeader='Extension'
 				putDispatch={putCustomVMSSExtensions}
+				reducer='customVMSSExtensions'
 			/>
 		</>
 	);
@@ -297,6 +304,7 @@ function TrustedLaunchMachineFunctionConfiguration() {
 				showApplyToAllCheckbox={true}
 				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
 				tooltip={TooltipText.COMMA_SEPARATED}
+				reducer='trustedLaunchMachineFunctions'
 			/>
 		</>
 	);
@@ -315,6 +323,7 @@ function AcceleratedNetworkingConfiguration() {
 				showApplyToAllCheckbox={true}
 				showHorizontalCheckbox={true}
 				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
+				reducer='acceleratedNetworkingEnabledMachineFunctions'
 			/>
 			<CustomTextInput
 				inputLabel='Machine Functions for Accelerated Networking In Place Update'
@@ -322,6 +331,7 @@ function AcceleratedNetworkingConfiguration() {
 				showApplyToAllCheckbox={true}
 				showHorizontalCheckbox={true}
 				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
+				reducer='acceleratedNetworkingInPlaceUpdate'
 			/>
 		</>
 	);
@@ -336,12 +346,14 @@ function SNATOutboundConfiguration() {
 				header='Outbound Rules'
 				buttonHeader='Rule'
 				putDispatch={putOutboundRules}
+				reducer='outboundRules'
 			/>
 			<CustomDataGrid
 				columnList={azureSLBColumns}
 				header='Azure SLB Rules'
 				buttonHeader='Rule'
 				putDispatch={putAzureSLBs}
+				reducer='azureSLBs'
 			/>
 		</>
 	);
@@ -357,6 +369,7 @@ function DiskProfileConfiguration() {
 				buttonHeader='Disk Profile'
 				putDispatch={putDiskProfiles}
 				tooltip={TooltipText.DISK_PROFILE_CUSTOM_PROPERTIES}
+				reducer='diskProfiles'
 			/>
 		</>
 	);

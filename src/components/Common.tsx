@@ -20,7 +20,8 @@ import {
 } from '@mui/material';
 import { Delete, InfoOutlined, Add } from '@mui/icons-material';
 import { Size, TooltipText } from '../enum/environment.enum';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import store from '../store/store';
 
 interface CustomTooltipProps {
 	tooltip: string;
@@ -38,6 +39,7 @@ interface CustomDataGridProps {
 	buttonHeader: string;
 	putDispatch: Function;
 	tooltip?: string;
+	reducer?: string;
 }
 
 interface CustomTextInputProps {
@@ -48,6 +50,7 @@ interface CustomTextInputProps {
 	showHorizontalCheckbox?: boolean;
 	checkboxLabel?: string;
 	tooltip?: string;
+	reducer?: string;
 }
 
 interface CustomHeaderProps {
@@ -146,9 +149,16 @@ export const CustomDataGrid: FC<CustomDataGridProps> = ({
 	buttonHeader,
 	putDispatch,
 	tooltip,
+	reducer,
 }) => {
 	const dispatch = useDispatch();
-	const [rows, setRows] = useState<GridRowsProp>([]);
+	const state = store.getState();
+	const dataFromStore = reducer
+		? (state[reducer as keyof typeof state] as any[])
+		: [];
+	const [rows, setRows] = useState<GridRowsProp>(
+		dataFromStore as GridRowsProp[]
+	);
 	const [id, setId] = useState(0);
 
 	useEffect(() => {
@@ -214,10 +224,14 @@ export const CustomTextInput: FC<CustomTextInputProps> = ({
 	showHorizontalCheckbox,
 	checkboxLabel,
 	tooltip,
+	reducer,
 }) => {
 	const dispatch = useDispatch();
-	const [applyToAll, setApplyToAll] = useState(false);
-	const [applyToAllCheckbox, setApplyToAllCheckbox] = useState('');
+	const state = store.getState();
+	const dataFromStore = reducer ? state[reducer as keyof typeof state] : '';
+	const initialCheckboxState = dataFromStore === '*';
+	const [applyToAll, setApplyToAll] = useState(initialCheckboxState);
+	const [applyToAllCheckbox, setApplyToAllCheckbox] = useState(dataFromStore || '');
 
 	useEffect(() => {
 		if (applyToAll) {

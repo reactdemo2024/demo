@@ -55,52 +55,6 @@ const generateAllocationIni = () => {
 				result += `${cp}\n`;
 			});
 		}
-
-		// 	if (mf.autoscaleProfiles && mf.autoscaleProfiles.length > 0) {
-		// 		result += `AutoscaleProfiles=${mf.autoscaleProfiles
-		// 			?.map((asp) => asp.name)
-		// 			.join(',')}\n`;
-		// 	}
-
-		// if (mf.machineGroups && mf.machineGroups.length > 0) {
-		// result += `MachineGroups=${mf.machineGroups}\n`;
-		// 	} else {
-		// 		result += `NumberOfMachines=${mf.numberOfMachines}\n`;
-		// 		result += `Sku=${mf.sku}\n`;
-		// }
-
-		// 	// [AutoscaleProfile_Foo]
-		// 	if (mf.autoscaleProfiles && mf.autoscaleProfiles.length > 0) {
-		// 		const autoscaleProfiles = mf.autoscaleProfiles;
-		// 		autoscaleProfiles?.forEach((asp) => {
-		// 			result += `\n[AutoscaleProfile_${asp.name}]\n`;
-		// 			result += `ProfileType=${ProfileType.METRIC_BASED}\n`;
-		// 			result += `MinMachineCount=${asp.minMachineCount}\n`;
-		// 			result += `DefaultMachineCount=${asp.defaultMachineCount}\n`;
-		// 			result += `MaxMachineCount=${asp.maxMachineCount}\n`;
-
-		// 			// [AutoscaleRule_Foo]
-		// 			if (asp.autoscaleRules && asp.autoscaleRules.length > 0) {
-		// 				const autoscaleRules = asp.autoscaleRules;
-		// 				result += `AutoscaleRules=${autoscaleRules
-		// 					?.map((asr) => asr.name)
-		// 					.join(',')}\n`;
-
-		// 				autoscaleRules?.forEach((asr) => {
-		// 					result += `\n[AutoscaleRule_${asr.name}]\n`;
-		// 					result += `TimeWindow=${asr.timeWindow}\n`;
-		// 					result += `Metric=${asr.metric}\n`;
-		// 					result += `Operator=${asr.operator}\n`;
-		// 					result += `Threshold=${asr.threshold}\n`;
-		// 					result += `ScaleDirection=${asr.scaleDirection}\n`;
-		// 					result += `ScaleType=${asr.scaleType}\n`;
-		// 					result += `ScaleValue=${asr.scaleValue}\n`;
-		// 					result += `MinScaleValue=${asr.minScaleValue}\n`;
-		// 					result += `Cooldown=${asr.cooldown}\n`;
-		// 				});
-		// 			}
-		// 		});
-		// 	}
 	});
 
 	// [MachineGroup_Foo]
@@ -169,19 +123,6 @@ const generateAllocationIni = () => {
 			});
 		}
 	});
-
-	// // [AutoscaleMetric_Foo]
-	// autoscaleMetrics?.forEach((am) => {
-	// 	result += `\n[AutoscaleMetric_${am.name}]\n`;
-	// 	result += `MetricSource=${am.metricSource}\n`;
-	// 	result += `MetricAccount=${am.metricAccount}\n`;
-	// 	result += `MetricNamespace=${am.metricNamespace}\n`;
-	// 	result += `MetricName=${am.metricName}\n`;
-	// 	result += `SamplingType=${am.samplingType}\n`;
-	// 	result += `MetricAggregation=${am.metricAggregation}\n`;
-	// 	result += `MetricIncludeFilters=${am.metricIncludeFilters}\n`;
-	// 	result += `MetricExcludeFilters=${am.metricExcludeFilters}\n`;
-	// });
 
 	return result;
 };
@@ -265,7 +206,6 @@ function AllocationSidebar() {
 			</Dialog>
 
 			<SimpleTreeView>
-				<h3>Machine Functions</h3>
 				{machineFunctions.map((mf, index) => (
 					<TreeItem
 						itemId={`machine-function-${index}`}
