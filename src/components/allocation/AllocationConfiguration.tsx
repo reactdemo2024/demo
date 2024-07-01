@@ -37,6 +37,19 @@ import { MachineGroup } from '../../interface/allocation/machine-group.interface
 import { AutoscaleProfile } from '../../interface/allocation/autoscale-profile.interface';
 import { AutoscaleRule } from '../../interface/allocation/autoscale-rule.interface';
 import { AutoscaleMetric } from '../../interface/allocation/autoscale-metric.interface';
+import { CustomDataGrid } from '../Common';
+import {
+	autoscaleMetricColumns,
+	autoscaleProfileColumns,
+	autoscaleRuleColumns,
+	machineFunctionColumns,
+	machineGroupColumns,
+} from '../../data/allocation-columns';
+import { putMachineFunctions2 } from '../../store/allocation/machineFunctionSlice2';
+import { putMachineGroups2 } from '../../store/allocation/machineGroupSlice2';
+import { putAutoscaleProfiles } from '../../store/allocation/autoscaleProfileSlice';
+import { putAutoscaleRules2 } from '../../store/allocation/autoscaleRuleSlice2';
+import { putAutoscaleMetrics2 } from '../../store/allocation/autoscaleMetricSlice2';
 
 function AllocationConfiguration() {
 	return (
@@ -45,19 +58,23 @@ function AllocationConfiguration() {
 			<Stack direction='column' spacing={3}>
 				{/* <ComputeDefinitionConfiguration /> */}
 				<MachineFunctionConfiguration />
+				<MachineGroupConfiguration />
+				<AutoscaleProfileConfiguration />
+				<AutoscaleRuleConfiguration />
+				<AutoscaleMetricConfiguration />
 			</Stack>
 		</>
 	);
 }
 
 function AutoscaleMetricConfiguration({
-	machineFunctionName,
-	autoscaleProfileName,
-	autoscaleRuleName,
+	// machineFunctionName,
+	// autoscaleProfileName,
+	// autoscaleRuleName,
 }: {
-	machineFunctionName: string;
-	autoscaleProfileName: string;
-	autoscaleRuleName: string;
+	// machineFunctionName: string;
+	// autoscaleProfileName: string;
+	// autoscaleRuleName: string;
 }) {
 	const dispatch = useDispatch();
 	const [autoscaleMetricForm, setAutoscaleMetricForm] = useState({
@@ -86,7 +103,13 @@ function AutoscaleMetricConfiguration({
 
 	return (
 		<>
-			<Stack direction='row' spacing={3} alignItems='center'>
+			<CustomDataGrid
+				columnList={autoscaleMetricColumns}
+				header='Autoscale Metrics'
+				buttonHeader='Autoscale Metric'
+				putDispatch={putAutoscaleMetrics2}
+			/>
+			{/* <Stack direction='row' spacing={3} alignItems='center'>
 				<h3>Autoscale Metric</h3>
 				<Button
 					variant='outlined'
@@ -179,17 +202,16 @@ function AutoscaleMetricConfiguration({
 					value={autoscaleMetricForm.metricExcludeFilters}
 					onChange={handleInputChange}
 				/>
-			</Stack>
+			</Stack> */}
 		</>
 	);
 }
 
-function AutoscaleRuleConfiguration({
-	machineFunctionName,
-	autoscaleProfileName,
-}: {
-	machineFunctionName: string;
-	autoscaleProfileName: string;
+function AutoscaleRuleConfiguration({}: // machineFunctionName,
+// autoscaleProfileName,
+{
+	// machineFunctionName: string;
+	// autoscaleProfileName: string;
 }) {
 	const autoscaleMetrics: AutoscaleMetric[] = useSelector(
 		(state: any) => state.autoscaleMetrics
@@ -239,7 +261,13 @@ function AutoscaleRuleConfiguration({
 
 	return (
 		<>
-			<Stack direction='row' spacing={3} alignItems='center'>
+			<CustomDataGrid
+				columnList={autoscaleRuleColumns}
+				header='Autoscale Rules'
+				buttonHeader='Autoscale Rule'
+				putDispatch={putAutoscaleRules2}
+			/>
+			{/* <Stack direction='row' spacing={3} alignItems='center'>
 				<h3>Autoscale Rules</h3>
 				<Button
 					variant='outlined'
@@ -359,15 +387,14 @@ function AutoscaleRuleConfiguration({
 				machineFunctionName={machineFunctionName}
 				autoscaleProfileName={autoscaleProfileName}
 				autoscaleRuleName={autoscaleRuleForm.name}
-			/>
+			/> */}
 		</>
 	);
 }
 
-function AutoscaleProfileConfiguration({
-	machineFunctionName,
-}: {
-	machineFunctionName: string;
+function AutoscaleProfileConfiguration({}: // machineFunctionName,
+{
+	// machineFunctionName: string;
 }) {
 	const dispatch = useDispatch();
 	const [autoscaleProfileForm, setAutoscaleProfileForm] = useState({
@@ -396,7 +423,13 @@ function AutoscaleProfileConfiguration({
 
 	return (
 		<>
-			<Stack direction='row' spacing={3} alignItems='center'>
+			<CustomDataGrid
+				columnList={autoscaleProfileColumns}
+				header='Autoscale Profiles'
+				buttonHeader='Autoscale Profile'
+				putDispatch={putAutoscaleProfiles}
+			/>
+			{/* <Stack direction='row' spacing={3} alignItems='center'>
 				<h3>Autoscale Profiles</h3>
 				<Button
 					variant='outlined'
@@ -453,15 +486,14 @@ function AutoscaleProfileConfiguration({
 			<AutoscaleRuleConfiguration
 				machineFunctionName={machineFunctionName}
 				autoscaleProfileName={autoscaleProfileForm.name}
-			/>
+			/> */}
 		</>
 	);
 }
 
-function MachineGroupConfiguration({
-	machineFunctionName,
-}: {
-	machineFunctionName: string;
+function MachineGroupConfiguration({}: // machineFunctionName,
+{
+	// machineFunctionName: string;
 }) {
 	const dispatch = useDispatch();
 	const [machineGroupForm, setMachineGroupForm] = useState({
@@ -494,7 +526,13 @@ function MachineGroupConfiguration({
 
 	return (
 		<>
-			<Stack direction='row' spacing={3} alignItems='center'>
+			<CustomDataGrid
+				columnList={machineGroupColumns}
+				header='Machine Groups'
+				buttonHeader='Machine Group'
+				putDispatch={putMachineGroups2}
+			/>
+			{/* <Stack direction='row' spacing={3} alignItems='center'>
 				<h3>Machine Groups</h3>
 				<Button
 					variant='outlined'
@@ -548,7 +586,7 @@ function MachineGroupConfiguration({
 					onChange={handleInputChange}
 				/>
 			</Stack>
-			<Divider />
+			<Divider /> */}
 		</>
 	);
 }
@@ -606,7 +644,13 @@ function MachineFunctionConfiguration() {
 
 	return (
 		<>
-			<Stack direction='row' spacing={3} alignItems='center' sx={{ mt: 0 }}>
+			<CustomDataGrid
+				columnList={machineFunctionColumns}
+				header='Machine Functions'
+				buttonHeader='Machine Function'
+				putDispatch={putMachineFunctions2}
+			/>
+			{/* <Stack direction='row' spacing={3} alignItems='center' sx={{ mt: 0 }}>
 				<h3>Machine Functions</h3>
 				<Button
 					variant='outlined'
@@ -688,7 +732,7 @@ function MachineFunctionConfiguration() {
 				<AutoscaleProfileConfiguration
 					machineFunctionName={machineFunctionForm.name}
 				/>
-			)}
+			)} */}
 		</>
 	);
 }

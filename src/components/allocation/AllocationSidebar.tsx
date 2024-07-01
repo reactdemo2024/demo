@@ -8,7 +8,6 @@ import {
 	Dialog,
 	DialogContent,
 	DialogTitle,
-	IconButton,
 	Stack,
 	TextField,
 	Typography,
@@ -18,69 +17,90 @@ import { useState } from 'react';
 import store from '../../store/store';
 import { blue, blueGrey, green, red } from '@mui/material/colors';
 import { AllocationType, EapV2, ProfileType } from '../../enum/allocation.enum';
+import { MachineFunctionPayload } from '../../store/allocation/machineFunctionSlice2';
+import { AutoscaleProfilePayload } from '../../store/allocation/autoscaleProfileSlice';
+import { AutoscaleMetricPayload } from '../../store/allocation/autoscaleMetricSlice2';
+import { Size } from '../../enum/environment.enum';
 
 const generateAllocationIni = () => {
 	const state = store.getState();
-	const machineFunctions = state.machineFunctions;
-	const machineGroups = state.machineGroups;
-	const autoscaleMetrics = state.autoscaleMetrics;
+	const machineFunctions = state.machineFunctions2;
+	const machineGroups = state.machineGroups2;
+	const autoscaleProfiles = state.autoscaleProfiles;
+	const autoscaleRules = state.autoscaleRules2;
+	const autoscaleMetrics = state.autoscaleMetrics2;
 
 	let result = '[ComputeDefinition]\n';
-	result += `MachineFunctions=${machineFunctions
-		.map((mf) => mf.name)
-		.join(',')}\n`;
 
-	machineFunctions.forEach((mf) => {
+	if (machineFunctions.length > 0) {
+		result += `MachineFunctions=${machineFunctions
+			.map((mf) => mf.name)
+			.join(',')}\n`;
+	}
+
+	// [MachineFunction_Foo]
+	machineFunctions?.forEach((mf) => {
 		result += `\n[MachineFunction_${mf.name}]\n`;
-		result += `AllocationType=${AllocationType.AZURE_VM}\n`;
-		result += `EapV2=${EapV2.EAP_V2}\n`;
-
-		if (mf.autoscaleProfiles && mf.autoscaleProfiles.length > 0) {
-			result += `EnableAutoScale=true\n`;
-			result += `AutoscaleProfiles=${mf.autoscaleProfiles
-				?.map((asp) => asp.name)
-				.join(',')}\n`;
-		}
-
-		if (mf.machineGroups && mf.machineGroups.length > 0) {
-			result += `MachineGroups=${mf.machineGroups.join(',')}\n`;
-		} else {
-			result += `NumberOfMachines=${mf.numberOfMachines}\n`;
-			result += `Sku=${mf.sku}\n`;
-		}
-
-		// [AutoscaleProfile_Foo]
-		if (mf.autoscaleProfiles && mf.autoscaleProfiles.length > 0) {
-			const autoscaleProfiles = mf.autoscaleProfiles;
-			autoscaleProfiles?.forEach((asp) => {
-				result += `\n[AutoscaleProfile_${asp.name}]\n`;
-				result += `ProfileType=${ProfileType.METRIC_BASED}\n`;
-				result += `MinMachineCount=${asp.minMachineCount}\n`;
-				result += `DefaultMachineCount=${asp.defaultMachineCount}\n`;
-				result += `MaxMachineCount=${asp.maxMachineCount}\n`;
-
-				// [AutoscaleRule_Foo]
-				if (asp.autoscaleRules && asp.autoscaleRules.length > 0) {
-					const autoscaleRules = asp.autoscaleRules;
-					result += `AutoscaleRules=${autoscaleRules
-						?.map((asr) => asr.name)
-						.join(',')}\n`;
-
-					autoscaleRules?.forEach((asr) => {
-						result += `\n[AutoscaleRule_${asr.name}]\n`;
-						result += `TimeWindow=${asr.timeWindow}\n`;
-						result += `Metric=${asr.metric}\n`;
-						result += `Operator=${asr.operator}\n`;
-						result += `Threshold=${asr.threshold}\n`;
-						result += `ScaleDirection=${asr.scaleDirection}\n`;
-						result += `ScaleType=${asr.scaleType}\n`;
-						result += `ScaleValue=${asr.scaleValue}\n`;
-						result += `MinScaleValue=${asr.minScaleValue}\n`;
-						result += `Cooldown=${asr.cooldown}\n`;
-					});
-				}
+		Object.keys(mf).forEach((key) => {
+			if (key !== 'name' && key !== 'id' && key !== 'customProperties') {
+				const formatKey = key.charAt(0).toUpperCase() + key.slice(1);
+				result += mf[key as keyof MachineFunctionPayload]
+					? `${formatKey}=${mf[key as keyof MachineFunctionPayload]}\n`
+					: '';
+			}
+		});
+		result += `AllocationType=${AllocationType.AZURE_VM}\nEapV2=${EapV2.EAP_V2}\n`;
+		if (mf.customProperties) {
+			mf.customProperties.split(',').forEach((cp) => {
+				result += `${cp}\n`;
 			});
 		}
+
+		// 	if (mf.autoscaleProfiles && mf.autoscaleProfiles.length > 0) {
+		// 		result += `AutoscaleProfiles=${mf.autoscaleProfiles
+		// 			?.map((asp) => asp.name)
+		// 			.join(',')}\n`;
+		// 	}
+
+		// if (mf.machineGroups && mf.machineGroups.length > 0) {
+		// result += `MachineGroups=${mf.machineGroups}\n`;
+		// 	} else {
+		// 		result += `NumberOfMachines=${mf.numberOfMachines}\n`;
+		// 		result += `Sku=${mf.sku}\n`;
+		// }
+
+		// 	// [AutoscaleProfile_Foo]
+		// 	if (mf.autoscaleProfiles && mf.autoscaleProfiles.length > 0) {
+		// 		const autoscaleProfiles = mf.autoscaleProfiles;
+		// 		autoscaleProfiles?.forEach((asp) => {
+		// 			result += `\n[AutoscaleProfile_${asp.name}]\n`;
+		// 			result += `ProfileType=${ProfileType.METRIC_BASED}\n`;
+		// 			result += `MinMachineCount=${asp.minMachineCount}\n`;
+		// 			result += `DefaultMachineCount=${asp.defaultMachineCount}\n`;
+		// 			result += `MaxMachineCount=${asp.maxMachineCount}\n`;
+
+		// 			// [AutoscaleRule_Foo]
+		// 			if (asp.autoscaleRules && asp.autoscaleRules.length > 0) {
+		// 				const autoscaleRules = asp.autoscaleRules;
+		// 				result += `AutoscaleRules=${autoscaleRules
+		// 					?.map((asr) => asr.name)
+		// 					.join(',')}\n`;
+
+		// 				autoscaleRules?.forEach((asr) => {
+		// 					result += `\n[AutoscaleRule_${asr.name}]\n`;
+		// 					result += `TimeWindow=${asr.timeWindow}\n`;
+		// 					result += `Metric=${asr.metric}\n`;
+		// 					result += `Operator=${asr.operator}\n`;
+		// 					result += `Threshold=${asr.threshold}\n`;
+		// 					result += `ScaleDirection=${asr.scaleDirection}\n`;
+		// 					result += `ScaleType=${asr.scaleType}\n`;
+		// 					result += `ScaleValue=${asr.scaleValue}\n`;
+		// 					result += `MinScaleValue=${asr.minScaleValue}\n`;
+		// 					result += `Cooldown=${asr.cooldown}\n`;
+		// 				});
+		// 			}
+		// 		});
+		// 	}
 	});
 
 	// [MachineGroup_Foo]
@@ -89,27 +109,92 @@ const generateAllocationIni = () => {
 		result += `NumberOfMachines=${mg.numberOfMachines}\n`;
 		result += `Sku=${mg.sku}\n`;
 		result += `NumberOfScaleUnits=${mg.numberOfScaleUnits}\n`;
+		if (mg.customProperties) {
+			mg.customProperties.split(',').forEach((cp) => {
+				result += `${cp}\n`;
+			});
+		}
+	});
+
+	// [AutoscaleProfile_Foo]
+	autoscaleProfiles?.forEach((ap) => {
+		result += `\n[AutoscaleProfile_${ap.name}]\n`;
+		Object.keys(ap).forEach((key) => {
+			if (key !== 'name' && key !== 'id' && key !== 'customProperties') {
+				const formatKey = key.charAt(0).toUpperCase() + key.slice(1);
+				result += ap[key as keyof AutoscaleProfilePayload]
+					? `${formatKey}=${ap[key as keyof AutoscaleProfilePayload]}\n`
+					: '';
+			}
+		});
+		if (ap.customProperties) {
+			ap.customProperties.split(',').forEach((cp) => {
+				result += `${cp}\n`;
+			});
+		}
+	});
+
+	// [AutoscaleRule_Foo]
+	autoscaleRules?.forEach((ar) => {
+		result += `\n[AutoscaleRule_${ar.name}]\n`;
+		Object.keys(ar).forEach((key) => {
+			if (key !== 'name' && key !== 'id' && key !== 'customProperties') {
+				const formatKey = key.charAt(0).toUpperCase() + key.slice(1);
+				result += ar[key as keyof AutoscaleProfilePayload]
+					? `${formatKey}=${ar[key as keyof AutoscaleProfilePayload]}\n`
+					: '';
+			}
+		});
+		if (ar.customProperties) {
+			ar.customProperties.split(',').forEach((cp) => {
+				result += `${cp}\n`;
+			});
+		}
 	});
 
 	// [AutoscaleMetric_Foo]
-	autoscaleMetrics?.forEach((am) => {
-		result += `\n[AutoscaleMetric_${am.name}]\n`;
-		result += `MetricSource=${am.metricSource}\n`;
-		result += `MetricAccount=${am.metricAccount}\n`;
-		result += `MetricNamespace=${am.metricNamespace}\n`;
-		result += `MetricName=${am.metricName}\n`;
-		result += `SamplingType=${am.samplingType}\n`;
-		result += `MetricAggregation=${am.metricAggregation}\n`;
-		result += `MetricIncludeFilters=${am.metricIncludeFilters}\n`;
-		result += `MetricExcludeFilters=${am.metricExcludeFilters}\n`;
+	autoscaleMetrics?.forEach((ar) => {
+		result += `\n[AutoscaleMetric_${ar.name}]\n`;
+		Object.keys(ar).forEach((key) => {
+			if (key !== 'name' && key !== 'id' && key !== 'customProperties') {
+				const formatKey = key.charAt(0).toUpperCase() + key.slice(1);
+				result += ar[key as keyof AutoscaleMetricPayload]
+					? `${formatKey}=${ar[key as keyof AutoscaleMetricPayload]}\n`
+					: '';
+			}
+		});
+		if (ar.customProperties) {
+			ar.customProperties.split(',').forEach((cp) => {
+				result += `${cp}\n`;
+			});
+		}
 	});
+
+	// // [AutoscaleMetric_Foo]
+	// autoscaleMetrics?.forEach((am) => {
+	// 	result += `\n[AutoscaleMetric_${am.name}]\n`;
+	// 	result += `MetricSource=${am.metricSource}\n`;
+	// 	result += `MetricAccount=${am.metricAccount}\n`;
+	// 	result += `MetricNamespace=${am.metricNamespace}\n`;
+	// 	result += `MetricName=${am.metricName}\n`;
+	// 	result += `SamplingType=${am.samplingType}\n`;
+	// 	result += `MetricAggregation=${am.metricAggregation}\n`;
+	// 	result += `MetricIncludeFilters=${am.metricIncludeFilters}\n`;
+	// 	result += `MetricExcludeFilters=${am.metricExcludeFilters}\n`;
+	// });
 
 	return result;
 };
 
 function AllocationSidebar() {
-	const machineFunctions: MachineFunction[] = useSelector(
-		(state: any) => state.machineFunctions
+	const machineFunctions: MachineFunctionPayload[] = useSelector(
+		(state: any) => state.machineFunctions2
+	);
+	const autoscaleProfiles: AutoscaleProfilePayload[] = useSelector(
+		(state: any) => state.autoscaleProfiles
+	);
+	const autoscaleMetrics: AutoscaleMetricPayload[] = useSelector(
+		(state: any) => state.autoscaleMetrics
 	);
 
 	const [open, setOpen] = useState(false);
@@ -140,7 +225,16 @@ function AllocationSidebar() {
 
 	return (
 		<Box sx={{ mt: 3 }}>
-			<Button variant='contained' onClick={handleOpen}>
+			<Button
+				variant='contained'
+				onClick={handleOpen}
+				sx={{
+					position: 'fixed',
+					bottom: 0,
+					left: 0,
+					margin: '20px', // Optional: adds some spacing from the edges
+				}}
+			>
 				Generate Allocation.ini
 			</Button>
 			<Dialog
@@ -183,43 +277,81 @@ function AllocationSidebar() {
 					>
 						{mf.machineGroups &&
 							mf.machineGroups.length > 0 &&
-							Array.from(mf.machineGroups).map((mg, mgIndex) => (
-								<TreeItem
-									itemId={`machine-group-${index}-${mgIndex}`}
-									label={
-										<Typography sx={{ backgroundColor: blue[100] }}>
-											{mg}
-										</Typography>
-									}
-								/>
-							))}
+							mf.machineGroups
+								.split(',')
+								.map((mg, mgIndex) => (
+									<TreeItem
+										itemId={`machine-group-${index}-${mgIndex}`}
+										label={
+											<Typography sx={{ backgroundColor: blue[100] }}>
+												{mg}
+											</Typography>
+										}
+									/>
+								))}
 						{mf.autoscaleProfiles &&
 							mf.autoscaleProfiles.length > 0 &&
-							mf.autoscaleProfiles.map((asp, aspIndex) => (
+							mf.autoscaleProfiles.split(',').map((asp, aspIndex) => (
 								<TreeItem
 									itemId={`autoscale-profile-${index}-${aspIndex}`}
 									label={
 										<Typography sx={{ backgroundColor: red[100] }}>
-											{asp.name}
+											{asp}
 										</Typography>
 									}
 								>
-									{asp.autoscaleRules &&
-										asp.autoscaleRules.map((asr, asrIndex) => (
-											<TreeItem
-												itemId={`${index}-${aspIndex}-${asrIndex}`}
-												label={
-													<Typography sx={{ backgroundColor: green[100] }}>
-														{asr.name}
-													</Typography>
-												}
-											/>
-										))}
+									{autoscaleProfiles.map((autoscaleProfile, apIndex) => {
+										if (
+											autoscaleProfile.name === asp &&
+											autoscaleProfile.autoscaleRules &&
+											autoscaleProfile.autoscaleRules.length > 0
+										) {
+											return autoscaleProfile.autoscaleRules
+												.split(',')
+												.map((asr, asrIndex) => (
+													<TreeItem
+														itemId={`${index}-${apIndex}-${asrIndex}`}
+														label={
+															<Typography sx={{ backgroundColor: green[100] }}>
+																{asr}
+															</Typography>
+														}
+													/>
+												));
+										}
+										return null;
+									})}
 								</TreeItem>
 							))}
 					</TreeItem>
 				))}
 			</SimpleTreeView>
+
+			{storeJson && (
+				<Box
+					sx={{
+						position: 'fixed',
+						p: 2,
+						border: '1px solid grey',
+						borderRadius: '4px',
+						width: '225px',
+						maxHeight: '78%', // Set a fixed maximum height
+						overflowY: 'auto', // Enable vertical scrolling
+					}}
+				>
+					<Typography variant='subtitle1'>Preview:</Typography>
+					<Typography
+						sx={{
+							whiteSpace: 'pre-wrap',
+							fontSize: Size.FONT_SMALL,
+							maxWidth: '100%',
+							overflowWrap: 'break-word',
+						}}
+					>
+						{storeJson}
+					</Typography>
+				</Box>
+			)}
 		</Box>
 	);
 }

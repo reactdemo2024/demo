@@ -34,7 +34,10 @@ export enum TooltipText {
 						option 4: Cluster:<<Cluster name>>,AutopilotEnvType:<<Environment type>>$SubscriptionIds=<<Replace with comma separated subscription guid>>`,
     DISK_PROFILE_STORAGE_ACCOUNT_TYPE = 'Keep disk size blank if using Local or TemporaryStorage',
     DISK_PROFILE_CUSTOM_PROPERTIES = 'Additional drives should be in the following format: <DriveLetter/LUN>=<Disk Size in GiB>, <Storage Account Type>, <Caching Type>, <IsPersistent>',
-
+    MACHINE_GROUPS = 'Enter name of machine group(s) separated by commas, i.e. Group1,Group2',
+    AUTOSCALE_PROFILES = 'Enter name of autoscale profile(s) separated by commas, i.e. Profile1,Profile2',
+    AUTOSCALE_RULES = 'Enter name of autoscale rule(s) separated by commas, i.e. Rule1,Rule2',
+    AUTOSCALE_METRIC = 'Enter name of autoscale metric created, i.e. Metric1',
 }
 
 export enum LabelText {

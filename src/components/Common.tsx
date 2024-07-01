@@ -112,7 +112,7 @@ export function createDataGridColumns(
 				minWidth: col.width || minWidth,
 				editable: true,
 				disableColumnMenu: true,
-				valueOptions: col.valueOptions && Object.values(col.valueOptions),
+				valueOptions: col?.valueOptions && Object.values(col.valueOptions),
 				renderHeader:
 					col.renderHeader &&
 					((params) => (
