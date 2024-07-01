@@ -1,12 +1,11 @@
-import { Subscription } from "react-redux";
+import { Subscription } from './subscription.interface';
 import { AvailabilityZones } from "./availability-zones.interface";
 import { ZoneBalance } from "./zone-balance.interface";
-import { VMSSCustomTag } from "./vmss-custom-tag.interface";
+import { CustomVMSSTag } from "./custom-vmss-tag.interface";
 
 export interface AzureComputeManager {
     availabilityZones?: AvailabilityZones;
     zoneBalance?: ZoneBalance[];
-    
     // EnableAzureMaintenanceControl=MF1,MF2 ; Azure maintenance control is enabled for MF1 and MF2.
     // EnableAzureMaintenanceControl=* ; Azure maintenance control is enabled for all machine functions in the environment
     enableAzureMaintenanceControl?: string; // all or specific MFs
@@ -14,16 +13,19 @@ export interface AzureComputeManager {
     encryptionAtHost?: string; // mfs: EncryptionAtHost=MF1 or all: EncryptionAtHost=*
     regionalIPV4MF?: string; // mfs: RegionalIPV4MF=MF1 or all: RegionalIPV4MF=*
     // EAPVMSS<json file name>=(comma separated)<machineFunction/machineFunction_machineGroup>
-    eapVMSSCustomTag?: VMSSCustomTag[];
-
-    msi?: string; // mfs: MSI='/...'
-
+    customVMSSTags?: CustomVMSSTag[];
     // TrustedLaunchMachineFunctions=(comma separated)<machineFunction/machineFunction_machineGroup>
-    trustedLaunchMachineFunction?: string; // mfs: TrustedLaunchMachineFunction=MF1 or all: TrustedLaunchMachineFunction=*
+    // NOTE: can't find any ex with the above format, only simple below
+    trustedLaunchMachineFunctions?: string; // mfs: TrustedLaunchMachineFunction=MF1 or all: TrustedLaunchMachineFunction=*
+    acceleratedNetworkingEnabledMachineFunctions?: string // same as above
+    acceleratedNetworkingInPlaceUpdate?: string // same as above
 
+
+    // TODO: are these needed?
+    // TODO: is MSI needed?
+    msi?: string; // mfs: MSI='/...'
     // MultipleScaleSetCriteria_<MachineFunctionName>=SKU 
     multipleScaleSetCriteria?: string; // mfs: MultipleScaleSetCriteria_MF1=VMType or all: MultipleScaleSetCriteria=VMType
-
     // MaxVmsAllowedForMigration=1 or MaxVmsAllowedForMigration_MF1=2
     maxVmsAllowedForMigration?: number | string; 
 }

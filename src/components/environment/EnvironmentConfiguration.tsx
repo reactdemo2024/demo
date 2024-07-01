@@ -1,15 +1,9 @@
 import {
 	Button,
 	Checkbox,
-	Divider,
-	FormControl,
 	FormControlLabel,
-	IconButton,
-	MenuItem,
-	Select,
 	Stack,
 	TextField,
-	Tooltip,
 	Typography,
 } from '@mui/material';
 import {
@@ -17,10 +11,8 @@ import {
 	GridRowsProp,
 	GridColDef,
 	GridRowId,
-	GridRenderEditCellParams,
 } from '@mui/x-data-grid';
-import { randomTraderName } from '@mui/x-data-grid-generator';
-import { Add, Delete, Info, InfoOutlined } from '@mui/icons-material';
+import { Add } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
@@ -29,47 +21,35 @@ import {
 	putAvailabilityZones,
 } from '../../store/environment/availabilityZoneSlice';
 import { putMaintenanceControl } from '../../store/environment/maintenanceControlSlice';
-import {
-	ZoneBalancePayload,
-	putZoneBalances,
-} from '../../store/environment/zoneBalanceSlice';
-import {
-	SubscriptionPayload,
-	putSubscriptions,
-} from '../../store/environment/subscriptionSlice';
-import { EnvType } from '../../enum/environment.enum';
+import { putZoneBalances } from '../../store/environment/zoneBalanceSlice';
+import { putSubscriptions } from '../../store/environment/subscriptionSlice';
+import { putRegionalIPV4MF } from '../../store/environment/regionalIPV4Slice';
 import { putEncryptionAtHost } from '../../store/environment/encryptionHostSlice';
+import { putCustomVMSSTags } from '../../store/environment/customVMSSTagSlice';
+import { putCustomVMSSExtensions } from '../../store/environment/customVMSSExtensionSlice';
+import { putTrustedLaunchMachineFunctions } from '../../store/environment/trustedLaunchMachineFunctionSlice';
+import { LabelText, TooltipText } from '../../enum/environment.enum';
 import {
-	VMSSCustomTagPayload,
-	putEapVMSSCustomTags,
-} from '../../store/environment/eapVMSSCustomTagSlice';
-
-interface CustomTooltipProps {
-	tooltip: string;
-	size?: number;
-}
-
-const CustomTooltip: React.FC<CustomTooltipProps> = ({ tooltip, size }) => {
-	return (
-		<Tooltip
-			title={
-				<Typography sx={{ whiteSpace: 'pre-line', fontSize: 12 }}>
-					{tooltip}
-				</Typography>
-			}
-			PopperProps={{
-				sx: {
-					'& .MuiTooltip-tooltip': {
-						maxWidth: 'none', // Remove the max-width restriction
-						width: 'auto', // Adjust width as needed
-					},
-				},
-			}}
-		>
-			<InfoOutlined sx={{ fontSize: size || 20 }} />
-		</Tooltip>
-	);
-};
+	CustomDataGrid,
+	CustomHeader,
+	CustomTextInput,
+	createDataGridColumns,
+} from '../Common';
+import {
+	availabilityZoneColumns,
+	customVMSSExtensionColumns,
+	customVMSSTagColumns,
+	outboundRuleColumns,
+	azureSLBColumns,
+	subscriptionColumns,
+	zoneBalanceColumns,
+	diskProfileColumns,
+} from '../../enum/environment-columns.enum';
+import { putAcceleratedNetworkingEnabledMachineFunctions } from '../../store/environment/acceleratedNetworkingEnabledMachineFunctionSlice';
+import { putAcceleratedNetworkingInPlaceUpdate } from '../../store/environment/acceleratedNetworkingInPlaceUpdateSlice';
+import { putOutboundRules } from '../../store/environment/outboundRuleSlice';
+import { putAzureSLBs } from '../../store/environment/azureSLBSlice';
+import { putDiskProfiles } from '../../store/environment/diskProfileSlice';
 
 function EnvironmentConfiguration() {
 	return (
@@ -94,11 +74,18 @@ function AzureComputeManagerConfiguration() {
 			<SubscriptionConfiguration />
 			<EncryptionAtHostConfiguration />
 			<RegionalIPV4MFConfiguration />
-			<EapVMSSCustomTagConfiguration />
+			<CustomVMSSTagConfiguration />
+			<CustomVMSSExtensionConfiguration />
+			<TrustedLaunchMachineFunctionConfiguration />
+			<AcceleratedNetworkingConfiguration />
+			<SNATOutboundConfiguration />
+			<DiskProfileConfiguration />
 		</>
 	);
 }
 
+// TODO: refactor to toggle b/w text input and data grid
+// ideas: might have to refactor the header portion into its own component to use the checkbox toggle
 function AvailabilityZoneConfiguration() {
 	const dispatch = useDispatch();
 	const [rows, setRows] = useState<GridRowsProp>([]);
@@ -130,11 +117,7 @@ function AvailabilityZoneConfiguration() {
 	};
 
 	const handleAddRow = () => {
-		const newRow = {
-			id,
-			machineFunctionName: randomTraderName(),
-			availabilityZone: randomTraderName(),
-		};
+		const newRow = { id };
 		setRows([...rows, newRow]);
 		setId(id + 1);
 	};
@@ -152,31 +135,10 @@ function AvailabilityZoneConfiguration() {
 		console.error('Row update error:', error);
 	};
 
-	const columns: GridColDef[] = [
-		{
-			field: 'machineFunctionName',
-			headerName: 'Name of Machine Function',
-			width: 300,
-			editable: true,
-		},
-		{
-			field: 'availabilityZone',
-			headerName: 'Availability Zone',
-			width: 250,
-			editable: true,
-		},
-		{
-			field: 'actions',
-			headerName: 'Delete',
-			width: 100,
-			renderCell: (params) => (
-				<IconButton onClick={() => handleDeleteRow(params.id)}>
-					<Delete />
-				</IconButton>
-			),
-			editable: false,
-		},
-	];
+	const columns: GridColDef[] = createDataGridColumns(
+		availabilityZoneColumns,
+		handleDeleteRow
+	);
 
 	return (
 		<>
@@ -228,468 +190,174 @@ function AvailabilityZoneConfiguration() {
 }
 
 function ZoneBalanceConfiguration() {
-	const dispatch = useDispatch();
-	const [rows, setRows] = useState<GridRowsProp>([]);
-	const [id, setId] = useState(0);
-
-	useEffect(() => {
-		dispatch(putZoneBalances(rows as ZoneBalancePayload[]));
-	}, [dispatch, rows]);
-
-	const handleDeleteRow = (id: GridRowId) => {
-		const updatedRows = rows.filter((row) => row.id !== id);
-		setRows(updatedRows);
-	};
-
-	const handleAddRow = () => {
-		const newRow = {
-			id,
-			machineFunctionName: randomTraderName(),
-			zoneBalance: true,
-		};
-		setRows([...rows, newRow]);
-		setId(id + 1);
-	};
-
-	const handleRowUpdate = (updatedRow: any) => {
-		setRows((prevRows) => {
-			return prevRows.map((row) =>
-				row.id === updatedRow.id ? updatedRow : row
-			);
-		});
-		return updatedRow;
-	};
-
-	const handleProcessRowUpdateError = (error: any) => {
-		console.error('Row update error:', error);
-	};
-
-	const columns: GridColDef[] = [
-		{
-			field: 'machineFunctionName',
-			headerName: 'Name of Machine Function',
-			width: 250,
-			editable: true,
-		},
-		{
-			field: 'enabled',
-			type: 'boolean',
-			headerName: 'Enable Zone Balance',
-			width: 300,
-			editable: true,
-		},
-		{
-			field: 'actions',
-			headerName: 'Delete',
-			width: 100,
-			renderCell: (params) => (
-				<IconButton onClick={() => handleDeleteRow(params.id)}>
-					<Delete />
-				</IconButton>
-			),
-			editable: false,
-		},
-	];
-
 	return (
 		<>
-			<Stack direction='row' spacing={3} alignItems='center'>
-				<h4>Zone Balance</h4>
-				<Button variant='text' onClick={handleAddRow} startIcon={<Add />}>
-					Zone Balance
-				</Button>
-			</Stack>
-			<>
-				<DataGrid
-					editMode='row'
-					rows={rows}
-					columns={columns}
-					processRowUpdate={(updatedRow) => handleRowUpdate(updatedRow)}
-					onProcessRowUpdateError={handleProcessRowUpdateError}
-					autoHeight
-				/>
-			</>
+			<CustomDataGrid
+				columnList={zoneBalanceColumns}
+				header='Zone Balance'
+				buttonHeader='Zone Balance'
+				putDispatch={putZoneBalances}
+			/>
 		</>
 	);
 }
 
 function AzureMaintenanceControlConfiguration() {
-	const dispatch = useDispatch();
-	const [allMaintenanceControl, setAllMaintenanceControl] = useState(false);
-	const [maintenanceControlForm, setMaintenanceControlForm] = useState('');
-
-	useEffect(() => {
-		if (allMaintenanceControl) {
-			setMaintenanceControlForm('*');
-		}
-		dispatch(putMaintenanceControl(maintenanceControlForm));
-	}, [allMaintenanceControl, maintenanceControlForm, dispatch]);
-
-	const tooltip =
-		'Enter each machine function name, separated by a comma, i.e. MachineFunction1, MachineFunction2';
-
 	return (
 		<>
-			<Stack direction='row' spacing={3} alignItems='center'>
-				<Stack direction='row' spacing={1} alignItems='center'>
-					<h4>Azure Maintenance Control</h4>
-					<CustomTooltip tooltip={tooltip} />
-				</Stack>
-				<FormControlLabel
-					control={
-						<Checkbox
-							checked={allMaintenanceControl}
-							onChange={(e) => setAllMaintenanceControl(e.target.checked)}
-							size='small'
-						/>
-					}
-					label='Enable All Machine Functions'
-				/>
-			</Stack>
-			<TextField
-				label='Machine Functions to Enable Maintenance Control'
-				type='text'
-				variant='outlined'
-				value={maintenanceControlForm}
-				onChange={(e) => setMaintenanceControlForm(e.target.value)}
-				disabled={allMaintenanceControl}
-				InputLabelProps={{ shrink: true }}
-				style={{ width: 400 }}
+			<CustomTextInput
+				header='Azure Maintenance Control'
+				inputLabel='Machine Functions to Enable Maintenance Control'
+				putDispatch={putMaintenanceControl}
+				showApplyToAllCheckbox={true}
+				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
+				tooltip={TooltipText.COMMA_SEPARATED}
 			/>
 		</>
 	);
 }
 
 function SubscriptionConfiguration() {
-	const dispatch = useDispatch();
-	const [rows, setRows] = useState<GridRowsProp>([]);
-	const [id, setId] = useState(0);
-
-	useEffect(() => {
-		dispatch(putSubscriptions(rows as SubscriptionPayload[]));
-	}, [dispatch, rows]);
-
-	const handleDeleteRow = (id: GridRowId) => {
-		const updatedRows = rows.filter((row) => row.id !== id);
-		setRows(updatedRows);
-	};
-
-	const handleAddRow = () => {
-		const newRow = {
-			id,
-			subscriptionIds: `${randomTraderName()},${randomTraderName()}`,
-			environment: randomTraderName(),
-			cluster: randomTraderName(),
-			autopilotEnvType: '',
-		};
-		setRows([...rows, newRow]);
-		setId(id + 1);
-	};
-
-	const handleRowUpdate = (updatedRow: any) => {
-		setRows((prevRows) => {
-			return prevRows.map((row) =>
-				row.id === updatedRow.id ? updatedRow : row
-			);
-		});
-		return updatedRow;
-	};
-
-	const handleCellUpdate = (params: any, e: any) => {
-		params.api.setEditCellValue({
-			id: params.id,
-			field: params.field,
-			value: e.target.value,
-		});
-		const updatedRows = rows.map((row) => {
-			if (row.id === params.id) {
-				return { ...row, [params.field]: e.target.value };
-			}
-			return row;
-		});
-		setRows(updatedRows);
-	};
-
-	const handleProcessRowUpdateError = (error: any) => {
-		console.error('Row update error:', error);
-	};
-
-	const columns: GridColDef[] = [
-		{
-			field: 'subscriptionIds',
-			headerName: 'Subscription Ids',
-			width: 250,
-			editable: true,
-		},
-		{
-			field: 'environment',
-			headerName: 'Name of Environment',
-			width: 200,
-			editable: true,
-		},
-		{
-			field: 'cluster',
-			headerName: 'Name of Cluster',
-			width: 200,
-			editable: true,
-		},
-		{
-			field: 'autopilotEnvType',
-			headerName: 'Environment Type',
-			width: 200,
-			editable: true,
-			renderEditCell: (params: GridRenderEditCellParams) => (
-				<FormControl fullWidth>
-					<Select
-						value={params.value}
-						onChange={(e) => {
-							handleCellUpdate(params, e);
-						}}
-						size='small'
-					>
-						{Object.values(EnvType).map((type) => (
-							<MenuItem key={type} value={type} sx={{ height: 32 }}>
-								{type}
-							</MenuItem>
-						))}
-					</Select>
-				</FormControl>
-			),
-		},
-		{
-			field: 'actions',
-			headerName: 'Delete',
-			width: 100,
-			renderCell: (params) => (
-				<IconButton onClick={() => handleDeleteRow(params.id)}>
-					<Delete />
-				</IconButton>
-			),
-			editable: false,
-		},
-	];
-
-	const tooltip = `There are 4 options for subscription configuration and will be formatted based on the filled inputs.
-						\noption 1: SubscriptionIds=<<Replace with comma separated subscription guid>>
-						option 2: Environment:<<Environment name>>$SubscriptionIds=<<Replace with comma separated subscription guid>> 
-						option 3: Cluster:<<Cluster name>>,Environment:<<Environment name>>$SubscriptionIds=<<Replace with comma separated subscription guid>> 
-						option 4: Cluster:<<Cluster name>>,AutopilotEnvType:<<Environment type>>$SubscriptionIds=<<Replace with comma separated subscription guid>>`;
-
 	return (
 		<>
-			<Stack direction='row' spacing={3} alignItems='center'>
-				<Stack direction='row' spacing={1} alignItems='center'>
-					<h4>Configure Subscription</h4>
-					<CustomTooltip tooltip={tooltip} />
-				</Stack>
-				<Button variant='text' onClick={handleAddRow} startIcon={<Add />}>
-					Subscription
-				</Button>
-			</Stack>
-			<>
-				<DataGrid
-					editMode='row'
-					rows={rows}
-					columns={columns}
-					processRowUpdate={(updatedRow) => handleRowUpdate(updatedRow)}
-					onProcessRowUpdateError={handleProcessRowUpdateError}
-					autoHeight
-				/>
-			</>
+			<CustomDataGrid
+				columnList={subscriptionColumns}
+				header='Configure Subscriptions'
+				buttonHeader='Subscription'
+				putDispatch={putSubscriptions}
+				tooltip={TooltipText.SUBSCRIPTION_OPTIONS}
+			/>
 		</>
 	);
 }
 
 function EncryptionAtHostConfiguration() {
-	const dispatch = useDispatch();
-	const [allEncryptionAtHost, setAllEncryptionAtHost] = useState(false);
-	const [encryptionAtHostForm, setEncryptionAtHostForm] = useState('');
-
-	useEffect(() => {
-		if (allEncryptionAtHost) {
-			setEncryptionAtHostForm('*');
-		}
-		dispatch(putEncryptionAtHost(encryptionAtHostForm));
-	}, [allEncryptionAtHost, encryptionAtHostForm, dispatch]);
-
-	const tooltip =
-		'Enter each machine function name, separated by a comma, i.e. MachineFunction1, MachineFunction2';
-
 	return (
 		<>
-			<Stack direction='row' spacing={3} alignItems='center'>
-				<Stack direction='row' spacing={1} alignItems='center'>
-					<h4>Encryption At Host</h4>
-					<CustomTooltip tooltip={tooltip} />
-				</Stack>
-				<FormControlLabel
-					control={
-						<Checkbox
-							checked={allEncryptionAtHost}
-							onChange={(e) => setAllEncryptionAtHost(e.target.checked)}
-							size='small'
-						/>
-					}
-					label='Enable All Machine Functions'
-				/>
-			</Stack>
-			<TextField
-				label='Machine Functions to Enable Encryption at Host'
-				type='text'
-				variant='outlined'
-				value={encryptionAtHostForm}
-				onChange={(e) => setEncryptionAtHostForm(e.target.value)}
-				disabled={allEncryptionAtHost}
-				InputLabelProps={{ shrink: true }}
-				style={{ width: 400 }}
+			<CustomTextInput
+				header='Encryption At Host'
+				inputLabel='Machine Functions to Enable Encryption at Host'
+				putDispatch={putEncryptionAtHost}
+				showApplyToAllCheckbox={true}
+				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
+				tooltip={TooltipText.COMMA_SEPARATED}
 			/>
 		</>
 	);
 }
 
 function RegionalIPV4MFConfiguration() {
-	const dispatch = useDispatch();
-	const [allRegionalIPV4MF, setAllRegionalIPV4MF] = useState(false);
-	const [regionalIPV4Form, setRegionalIPV4Form] = useState('');
-
-	useEffect(() => {
-		if (allRegionalIPV4MF) {
-			setRegionalIPV4Form('*');
-		}
-		dispatch(putMaintenanceControl(regionalIPV4Form));
-	}, [allRegionalIPV4MF, regionalIPV4Form, dispatch]);
-
-	const tooltip =
-		'Enter each machine function name, separated by a comma, i.e. MachineFunction1, MachineFunction2';
-
 	return (
 		<>
-			<Stack direction='row' spacing={3} alignItems='center'>
-				<Stack direction='row' spacing={1} alignItems='center'>
-					<h4>Regional IPV4</h4>
-					<CustomTooltip tooltip={tooltip} />
-				</Stack>
-				<FormControlLabel
-					control={
-						<Checkbox
-							checked={allRegionalIPV4MF}
-							onChange={(e) => setAllRegionalIPV4MF(e.target.checked)}
-							size='small'
-						/>
-					}
-					label='Enable All Machine Functions'
-				/>
-			</Stack>
-			<TextField
-				label='Machine Functions to Enable Regional IPV4'
-				type='text'
-				variant='outlined'
-				value={regionalIPV4Form}
-				onChange={(e) => setRegionalIPV4Form(e.target.value)}
-				disabled={allRegionalIPV4MF}
-				InputLabelProps={{ shrink: true }}
-				style={{ width: 400 }}
+			<CustomTextInput
+				header='Regional IPV4'
+				inputLabel='Machine Functions to Enable Regional IPV4'
+				putDispatch={putRegionalIPV4MF}
+				showApplyToAllCheckbox={true}
+				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
+				tooltip={TooltipText.COMMA_SEPARATED}
 			/>
 		</>
 	);
 }
 
-function EapVMSSCustomTagConfiguration() {
-	const dispatch = useDispatch();
-	const [rows, setRows] = useState<GridRowsProp>([]);
-	const [id, setId] = useState(0);
-
-	useEffect(() => {
-		dispatch(putEapVMSSCustomTags(rows as VMSSCustomTagPayload[]));
-	}, [dispatch, rows]);
-
-	const handleDeleteRow = (id: GridRowId) => {
-		const updatedRows = rows.filter((row) => row.id !== id);
-		setRows(updatedRows);
-	};
-
-	const handleAddRow = () => {
-		const newRow = {
-			id,
-			jsonName: randomTraderName(),
-			machineFunctionName: randomTraderName(),
-			machineGroupName: randomTraderName(),
-		};
-		setRows([...rows, newRow]);
-		setId(id + 1);
-	};
-
-	const handleRowUpdate = (updatedRow: any) => {
-		setRows((prevRows) => {
-			return prevRows.map((row) =>
-				row.id === updatedRow.id ? updatedRow : row
-			);
-		});
-		return updatedRow;
-	};
-
-	const handleProcessRowUpdateError = (error: any) => {
-		console.error('Row update error:', error);
-	};
-
-	const tooltip = 'Include .json extension in the field, i.e. filename.json';
-
-	const columns: GridColDef[] = [
-		{
-			field: 'jsonName',
-			headerName: 'JSON File',
-			width: 250,
-			editable: true,
-			renderHeader: (params) => (
-				<Stack direction='row' spacing={1} alignItems='center'>
-					<span>{params.colDef.headerName}</span>
-					<CustomTooltip tooltip={tooltip} size={18} />
-				</Stack>
-			),
-		},
-		{
-			field: 'machineFunctionName',
-			headerName: 'Name of Machine Function',
-			width: 300,
-			editable: true,
-		},
-		{
-			field: 'machineGroupName',
-			headerName: 'Name of Machine Group',
-			width: 300,
-			editable: true,
-		},
-		{
-			field: 'actions',
-			headerName: 'Delete',
-			width: 100,
-			renderCell: (params) => (
-				<IconButton onClick={() => handleDeleteRow(params.id)}>
-					<Delete />
-				</IconButton>
-			),
-			editable: false,
-		},
-	];
-
+function CustomVMSSTagConfiguration() {
 	return (
 		<>
-			<Stack direction='row' spacing={3} alignItems='center'>
-				<h4>EAP VMSS Custom Tag</h4>
-				<Button variant='text' onClick={handleAddRow} startIcon={<Add />}>
-					VMSS Custom Tag
-				</Button>
-			</Stack>
-			<>
-				<DataGrid
-					editMode='row'
-					rows={rows}
-					columns={columns}
-					processRowUpdate={(updatedRow) => handleRowUpdate(updatedRow)}
-					onProcessRowUpdateError={handleProcessRowUpdateError}
-					autoHeight
-				/>
-			</>
+			<CustomDataGrid
+				columnList={customVMSSTagColumns}
+				header='Custom VMSS Tags'
+				buttonHeader='Tag'
+				putDispatch={putCustomVMSSTags}
+			/>
+		</>
+	);
+}
+
+function CustomVMSSExtensionConfiguration() {
+	return (
+		<>
+			<CustomDataGrid
+				columnList={customVMSSExtensionColumns}
+				header='Custom VMSS Extensions'
+				buttonHeader='Extension'
+				putDispatch={putCustomVMSSExtensions}
+			/>
+		</>
+	);
+}
+
+function TrustedLaunchMachineFunctionConfiguration() {
+	return (
+		<>
+			<CustomTextInput
+				header='Trusted Launch'
+				inputLabel='Machine Functions for Trusted Launch'
+				putDispatch={putTrustedLaunchMachineFunctions}
+				showApplyToAllCheckbox={true}
+				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
+				tooltip={TooltipText.COMMA_SEPARATED}
+			/>
+		</>
+	);
+}
+
+function AcceleratedNetworkingConfiguration() {
+	return (
+		<>
+			<CustomHeader
+				text='Accelerated Networking'
+				tooltip={TooltipText.COMMA_SEPARATED}
+			/>
+			<CustomTextInput
+				inputLabel='Machine Functions for Accelerated Networking Enabled'
+				putDispatch={putAcceleratedNetworkingEnabledMachineFunctions}
+				showApplyToAllCheckbox={true}
+				showHorizontalCheckbox={true}
+				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
+			/>
+			<CustomTextInput
+				inputLabel='Machine Functions for Accelerated Networking In Place Update'
+				putDispatch={putAcceleratedNetworkingInPlaceUpdate}
+				showApplyToAllCheckbox={true}
+				showHorizontalCheckbox={true}
+				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
+			/>
+		</>
+	);
+}
+
+function SNATOutboundConfiguration() {
+	return (
+		<>
+			<h3>SNAT / Outbound Rules</h3>
+			<CustomDataGrid
+				columnList={outboundRuleColumns}
+				header='Outbound Rules'
+				buttonHeader='Rule'
+				putDispatch={putOutboundRules}
+			/>
+			<CustomDataGrid
+				columnList={azureSLBColumns}
+				header='Azure SLB Rules'
+				buttonHeader='Rule'
+				putDispatch={putAzureSLBs}
+			/>
+		</>
+	);
+}
+
+// TODO: refactor so you can select from created disk profiles and the table shows the drive settings for the selected one
+function DiskProfileConfiguration() {
+	return (
+		<>
+			<CustomDataGrid
+				columnList={diskProfileColumns}
+				header='Disk Profiles'
+				buttonHeader='Disk Profile'
+				putDispatch={putDiskProfiles}
+				tooltip={TooltipText.DISK_PROFILE_CUSTOM_PROPERTIES}
+			/>
 		</>
 	);
 }

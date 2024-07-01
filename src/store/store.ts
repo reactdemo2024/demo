@@ -9,7 +9,14 @@ import zoneBalanceReducer from './environment/zoneBalanceSlice';
 import subscriptionReducer from './environment/subscriptionSlice';
 import encryptionHostReducer from './environment/encryptionHostSlice';
 import regionalIPV4Reducer from './environment/regionalIPV4Slice';
-import eapVMSSCustomTagReducer from './environment/eapVMSSCustomTagSlice';
+import customVMSSTagReducer from './environment/customVMSSTagSlice';
+import customVMSSExtensionReducer from './environment/customVMSSExtensionSlice';
+import trustedLaunchMachineFunctionReducer from './environment/trustedLaunchMachineFunctionSlice';
+import acceleratedNetworkingEnabledMachineFunctionReducer from './environment/acceleratedNetworkingEnabledMachineFunctionSlice';
+import acceleratedNetworkingInPlaceUpdateReducer from './environment/acceleratedNetworkingInPlaceUpdateSlice';
+import outboundRuleReducer from './environment/outboundRuleSlice';
+import azureSLBReducer from './environment/azureSLBSlice';
+import diskProfileReducer from './environment/diskProfileSlice';
 
 const store = configureStore({
   reducer: {
@@ -25,7 +32,14 @@ const store = configureStore({
     subscriptions: subscriptionReducer,
     hostEncryption: encryptionHostReducer,
     regionalIPV4: regionalIPV4Reducer,
-    eapVMSSCustomTags: eapVMSSCustomTagReducer,
+    customVMSSTags: customVMSSTagReducer,
+    customVMSSExtensions: customVMSSExtensionReducer,
+    trustedLaunchMachineFunctions: trustedLaunchMachineFunctionReducer,
+    acceleratedNetworkingEnabledMachineFunctions: acceleratedNetworkingEnabledMachineFunctionReducer,
+    acceleratedNetworkingInPlaceUpdate: acceleratedNetworkingInPlaceUpdateReducer,
+    outboundRules: outboundRuleReducer,
+    azureSLBs: azureSLBReducer,
+    diskProfiles: diskProfileReducer,
   },
 });
 

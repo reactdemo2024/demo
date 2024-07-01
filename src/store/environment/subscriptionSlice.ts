@@ -3,6 +3,7 @@ import { Subscription } from "../../interface/environment/subscription.interface
 
 export interface SubscriptionPayload extends Subscription {
     id: string;
+    customProperties: string;
 }
 
 const subscriptionSlice = createSlice({

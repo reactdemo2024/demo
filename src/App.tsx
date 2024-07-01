@@ -1,6 +1,15 @@
 import AllocationConfiguration from './components/allocation/AllocationConfiguration';
 import EnvironmentConfiguration from './components/environment/EnvironmentConfiguration';
-import { Tabs, Tab, Box, Stack, Card, Typography } from '@mui/material';
+import {
+	Tabs,
+	Tab,
+	Box,
+	Stack,
+	Card,
+	Typography,
+	createTheme,
+	ThemeProvider,
+} from '@mui/material';
 import AllocationSidebar from './components/allocation/AllocationSidebar';
 import EnvironmentSidebar from './components/environment/EnvironmentSidebar';
 import { Provider } from 'react-redux';
@@ -14,40 +23,54 @@ export default function App() {
 		setTabIsAllocation(tabIndex === 0);
 	};
 
+	const theme = createTheme({
+		components: {
+			MuiMenuItem: {
+				styleOverrides: {
+					root: {
+						height: 32, // height for each menu item
+					},
+				},
+			},
+		},
+	});
+
 	return (
 		<Provider store={store}>
-			<Typography>
-				<Box sx={{ width: '100%' }} mb={2}>
-					<Tabs
-						onChange={handleTabChange}
-						value={tabIsAllocation ? 0 : 1}
-						aria-label='Tabs where selection follows focus'
-						selectionFollowsFocus
+			<ThemeProvider theme={theme}>
+				<Typography>
+					<Box sx={{ width: '100%' }} mb={2}>
+						<Tabs
+							onChange={handleTabChange}
+							value={tabIsAllocation ? 0 : 1}
+							aria-label='Tabs where selection follows focus'
+							selectionFollowsFocus
+						>
+							<Tab label='Allocation Configuration' />
+							<Tab label='Environment Configuration' />
+						</Tabs>
+					</Box>
+					<Stack
+						direction='row'
+						spacing={2}
+						sx={{ alignItems: 'stretch', minHeight: 'calc(100vh - 80px)' }}
 					>
-						<Tab label='Allocation Configuration' />
-						<Tab label='Environment Configuration' />
-					</Tabs>
-				</Box>
-				<Stack
-					direction='row'
-					spacing={2}
-					sx={{ alignItems: 'stretch', minHeight: 'calc(100vh - 80px)' }}
-				>
-					<Card variant='outlined' sx={{ px: 2, minWidth: '260px' }}>
-						{tabIsAllocation ? <AllocationSidebar /> : <EnvironmentSidebar />}
-					</Card>
-					<Card
-						variant='outlined'
-						sx={{ px: 2, width: '-webkit-fill-available' }}
-					>
-						{tabIsAllocation ? (
-							<AllocationConfiguration />
-						) : (
-							<EnvironmentConfiguration />
-						)}
-					</Card>
-				</Stack>
-			</Typography>
+						<Card variant='outlined' sx={{ px: 2, minWidth: '260px' }}>
+							{tabIsAllocation ? <AllocationSidebar /> : <EnvironmentSidebar />}
+						</Card>
+						<Card
+							variant='outlined'
+							sx={{ px: 2, width: '-webkit-fill-available' }}
+						>
+							{tabIsAllocation ? (
+								<AllocationConfiguration />
+							) : (
+								<EnvironmentConfiguration />
+							)}
+						</Card>
+					</Stack>
+				</Typography>
+			</ThemeProvider>
 		</Provider>
 	);
 }
