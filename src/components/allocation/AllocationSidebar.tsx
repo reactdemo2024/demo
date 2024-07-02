@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import {
@@ -14,7 +14,7 @@ import {
 	styled,
 } from '@mui/material';
 import { FileCopy, FileDownload } from '@mui/icons-material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import store from '../../store/store';
 import { AllocationType, EapV2 } from '../../enum/allocation.enum';
 import { MachineFunctionPayload } from '../../store/allocation/machineFunctionSlice';
@@ -22,6 +22,7 @@ import { AutoscaleProfilePayload } from '../../store/allocation/autoscaleProfile
 import { AutoscaleMetricPayload } from '../../store/allocation/autoscaleMetricSlice';
 import { Color, Size } from '../../enum/environment.enum';
 import { MachineGroupPayload } from '../../store/allocation/machineGroupSlice';
+import { putAllocationPreview } from '../../store/allocation/allocationPreviewSlice';
 
 const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
 	'& .MuiTreeItem-content': {
@@ -141,6 +142,13 @@ const generateAllocationIni = () => {
 };
 
 function AllocationSidebar() {
+	const dispatch = useDispatch();
+	const state = store.getState();
+	const dataFromStore = state.allocationPreview;
+	
+	const [open, setOpen] = useState(false);
+	const [storeJson, setStoreJson] = useState(dataFromStore);
+	
 	const machineFunctions: MachineFunctionPayload[] = useSelector(
 		(state: any) => state.machineFunctions
 	);
@@ -151,15 +159,16 @@ function AllocationSidebar() {
 		(state: any) => state.autoscaleMetrics
 	);
 
-	const [open, setOpen] = useState(false);
-	const [storeJson, setStoreJson] = useState('');
-
+	useEffect(() => {
+		dispatch(putAllocationPreview(storeJson));
+	}, [dispatch, storeJson]);
+	
 	const handleOpen = () => {
 		const allocationIni = generateAllocationIni();
 		setStoreJson(allocationIni);
 		setOpen(true);
 	};
-
+	
 	const handleClose = () => {
 		setOpen(false);
 	};

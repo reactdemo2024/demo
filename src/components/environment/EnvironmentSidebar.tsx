@@ -9,12 +9,14 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import store from '../../store/store';
 import { CustomVMSSExtensionPayload } from '../../store/environment/customVMSSExtensionSlice';
 import { OutboundRulePayload } from '../../store/environment/outboundRuleSlice';
 import { AzureSLBPayload } from '../../store/environment/azureSLBSlice';
 import { Size } from '../../enum/environment.enum';
+import { useDispatch } from 'react-redux';
+import { putEnvironmentPreview } from '../../store/environment/environmentPreviewSlice';
 
 const generateEnvironmentIni = () => {
 	const state = store.getState();
@@ -232,8 +234,16 @@ const generateEnvironmentIni = () => {
 };
 
 function EnvironmentSidebar() {
+	const dispatch = useDispatch();
+	const state = store.getState();
+	const dataFromStore = state.environmentPreview;
+
 	const [open, setOpen] = useState(false);
-	const [storeJson, setStoreJson] = useState('');
+	const [storeJson, setStoreJson] = useState(dataFromStore);
+
+	useEffect(() => {
+		dispatch(putEnvironmentPreview(storeJson));
+	}, [dispatch, storeJson]);
 
 	const handleOpen = () => {
 		const environmentIni = generateEnvironmentIni();

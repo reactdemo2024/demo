@@ -18,16 +18,22 @@ import acceleratedNetworkingInPlaceUpdateReducer from './environment/accelerated
 import outboundRuleReducer from './environment/outboundRuleSlice';
 import azureSLBReducer from './environment/azureSLBSlice';
 import diskProfileReducer from './environment/diskProfileSlice';
+import environmentPreviewReducer from './environment/environmentPreviewSlice';
+import allocationPreviewReducer from './allocation/allocationPreviewSlice';
 
 const store = configureStore({
   reducer: {
-    // // allocation.ini
+    // generated configuration
+    environmentPreview: environmentPreviewReducer,
+    allocationPreview: allocationPreviewReducer,
+
+    // allocation.ini
     machineFunctions: machineFunctionsReducer,
     machineGroups: machineGroupsReducer,
     autoscaleProfiles: autoscaleProfileReducer,
     autoscaleRules: autoscaleRuleReducer,
     autoscaleMetrics: autoscaleMetricReducer,
-
+    
     // environment.ini
     availabilityZones: availabilityZoneReducer,
     zoneBalances: zoneBalanceReducer,
