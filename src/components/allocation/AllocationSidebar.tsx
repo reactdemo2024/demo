@@ -21,6 +21,7 @@ import { MachineFunctionPayload } from '../../store/allocation/machineFunctionSl
 import { AutoscaleProfilePayload } from '../../store/allocation/autoscaleProfileSlice';
 import { AutoscaleMetricPayload } from '../../store/allocation/autoscaleMetricSlice2';
 import { Color, Size } from '../../enum/environment.enum';
+import { MachineGroupPayload } from '../../store/allocation/machineGroupSlice2';
 
 const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
 	'& .MuiTreeItem-content': {
@@ -67,9 +68,14 @@ const generateAllocationIni = () => {
 	// [MachineGroup_Foo]
 	machineGroups?.forEach((mg) => {
 		result += `\n[MachineGroup_${mg.name}]\n`;
-		result += `NumberOfMachines=${mg.numberOfMachines}\n`;
-		result += `Sku=${mg.sku}\n`;
-		result += `NumberOfScaleUnits=${mg.numberOfScaleUnits}\n`;
+		Object.keys(mg).forEach((key) => {
+			if (key !== 'name' && key !== 'id' && key !== 'customProperties') {
+				const formatKey = key.charAt(0).toUpperCase() + key.slice(1);
+				result += mg[key as keyof MachineGroupPayload]
+					? `${formatKey}=${mg[key as keyof MachineGroupPayload]}\n`
+					: '';
+			}
+		});
 		if (mg.customProperties) {
 			mg.customProperties.split(',').forEach((cp) => {
 				result += `${cp}\n`;
