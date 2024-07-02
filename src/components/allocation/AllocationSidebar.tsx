@@ -1,5 +1,4 @@
 import { useSelector } from 'react-redux';
-import { MachineFunction } from '../../interface/allocation/machine-function.interface';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import {
@@ -8,19 +7,27 @@ import {
 	Dialog,
 	DialogContent,
 	DialogTitle,
+	Divider,
 	Stack,
 	TextField,
 	Typography,
+	styled,
 } from '@mui/material';
 import { FileCopy, FileDownload } from '@mui/icons-material';
 import { useState } from 'react';
 import store from '../../store/store';
-import { blue, blueGrey, green, red } from '@mui/material/colors';
-import { AllocationType, EapV2, ProfileType } from '../../enum/allocation.enum';
+import { AllocationType, EapV2 } from '../../enum/allocation.enum';
 import { MachineFunctionPayload } from '../../store/allocation/machineFunctionSlice2';
 import { AutoscaleProfilePayload } from '../../store/allocation/autoscaleProfileSlice';
 import { AutoscaleMetricPayload } from '../../store/allocation/autoscaleMetricSlice2';
-import { Size } from '../../enum/environment.enum';
+import { Color, Size } from '../../enum/environment.enum';
+
+const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
+	'& .MuiTreeItem-content': {
+		padding: '1px 0px',
+		gap: '2px',
+	},
+}));
 
 const generateAllocationIni = () => {
 	const state = store.getState();
@@ -165,7 +172,7 @@ function AllocationSidebar() {
 	};
 
 	return (
-		<Box sx={{ mt: 3 }}>
+		<>
 			<Button
 				variant='contained'
 				onClick={handleOpen}
@@ -173,7 +180,8 @@ function AllocationSidebar() {
 					position: 'fixed',
 					bottom: 0,
 					left: 0,
-					margin: '20px', // Optional: adds some spacing from the edges
+					ml: '30px',
+					mb: '20px',
 				}}
 			>
 				Generate Allocation.ini
@@ -205,81 +213,123 @@ function AllocationSidebar() {
 				</DialogContent>
 			</Dialog>
 
-			<SimpleTreeView>
-				{machineFunctions.map((mf, index) => (
-					<TreeItem
-						itemId={`machine-function-${index}`}
-						label={
-							<Typography sx={{ backgroundColor: blueGrey[100] }}>
-								{mf.name}
-							</Typography>
-						}
-					>
-						{mf.machineGroups &&
-							mf.machineGroups.length > 0 &&
-							mf.machineGroups
-								.split(',')
-								.map((mg, mgIndex) => (
-									<TreeItem
+			<Stack
+				direction='column'
+				spacing={1}
+				sx={{
+					position: 'fixed',
+					width: '260px',
+					maxHeight: 'calc(100vh - 150px)', // Set a fixed maximum height
+					overflowY: 'auto',
+				}}
+			>
+				<SimpleTreeView>
+					{machineFunctions.map((mf, index) => (
+						<CustomTreeItem
+							itemId={`machine-function-${index}`}
+							label={
+								<Typography
+									sx={{
+										backgroundColor: Color.RED,
+										py: '4px',
+										pl: 1,
+										fontWeight: Size.FONT_BOLD,
+									}}
+								>
+									{mf.name}
+								</Typography>
+							}
+						>
+							{mf.machineGroups &&
+								mf.machineGroups.length > 0 &&
+								mf.machineGroups.split(',').map((mg, mgIndex) => (
+									<CustomTreeItem
 										itemId={`machine-group-${index}-${mgIndex}`}
 										label={
-											<Typography sx={{ backgroundColor: blue[100] }}>
+											<Typography
+												sx={{
+													backgroundColor: Color.GREEN,
+													py: '4px',
+													pl: 1,
+													fontWeight: Size.FONT_BOLD,
+												}}
+											>
 												{mg}
 											</Typography>
 										}
 									/>
 								))}
-						{mf.autoscaleProfiles &&
-							mf.autoscaleProfiles.length > 0 &&
-							mf.autoscaleProfiles.split(',').map((asp, aspIndex) => (
-								<TreeItem
-									itemId={`autoscale-profile-${index}-${aspIndex}`}
-									label={
-										<Typography sx={{ backgroundColor: red[100] }}>
-											{asp}
-										</Typography>
-									}
-								>
-									{autoscaleProfiles.map((autoscaleProfile, apIndex) => {
-										if (
-											autoscaleProfile.name === asp &&
-											autoscaleProfile.autoscaleRules &&
-											autoscaleProfile.autoscaleRules.length > 0
-										) {
-											return autoscaleProfile.autoscaleRules
-												.split(',')
-												.map((asr, asrIndex) => (
-													<TreeItem
-														itemId={`${index}-${apIndex}-${asrIndex}`}
-														label={
-															<Typography sx={{ backgroundColor: green[100] }}>
-																{asr}
-															</Typography>
-														}
-													/>
-												));
+							{mf.autoscaleProfiles &&
+								mf.autoscaleProfiles.length > 0 &&
+								mf.autoscaleProfiles.split(',').map((asp, aspIndex) => (
+									<CustomTreeItem
+										itemId={`autoscale-profile-${index}-${aspIndex}`}
+										label={
+											<Typography
+												sx={{
+													backgroundColor: Color.BLUE,
+													py: '4px',
+													pl: 1,
+													fontWeight: Size.FONT_BOLD,
+												}}
+											>
+												{asp}
+											</Typography>
 										}
-										return null;
-									})}
-								</TreeItem>
-							))}
-					</TreeItem>
-				))}
-			</SimpleTreeView>
+									>
+										{autoscaleProfiles.map((autoscaleProfile, apIndex) => {
+											if (
+												autoscaleProfile.name === asp &&
+												autoscaleProfile.autoscaleRules &&
+												autoscaleProfile.autoscaleRules.length > 0
+											) {
+												return autoscaleProfile.autoscaleRules
+													.split(',')
+													.map((asr, asrIndex) => (
+														<CustomTreeItem
+															itemId={`${index}-${apIndex}-${asrIndex}`}
+															label={
+																<Typography
+																	sx={{
+																		backgroundColor: Color.YELLOW,
+																		py: '4px',
+																		pl: 1,
+																		fontWeight: Size.FONT_BOLD,
+																	}}
+																>
+																	{asr}
+																</Typography>
+															}
+														/>
+													));
+											}
+											return null;
+										})}
+									</CustomTreeItem>
+								))}
+						</CustomTreeItem>
+					))}
+					<Divider />
+				</SimpleTreeView>
+				<AllocationPreview storeJson={storeJson} />
+			</Stack>
+		</>
+	);
+}
 
+function AllocationPreview({ storeJson }: { storeJson: string }) {
+	return (
+		<Box sx={{ px: 1 }}>
 			{storeJson && (
-				<Box
-					sx={{
-						position: 'fixed',
-						p: 2,
-						border: '1px solid grey',
-						borderRadius: '4px',
-						width: '225px',
-						maxHeight: '78%', // Set a fixed maximum height
-						overflowY: 'auto', // Enable vertical scrolling
-					}}
-				>
-					<Typography variant='subtitle1'>Preview:</Typography>
+				<>
+					<Typography
+						variant='subtitle1'
+						sx={{
+							fontWeight: Size.FONT_BOLD,
+						}}
+					>
+						Preview:
+					</Typography>
 					<Typography
 						sx={{
 							whiteSpace: 'pre-wrap',
@@ -290,7 +340,7 @@ function AllocationSidebar() {
 					>
 						{storeJson}
 					</Typography>
-				</Box>
+				</>
 			)}
 		</Box>
 	);

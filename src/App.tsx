@@ -55,7 +55,7 @@ export default function App() {
 						spacing={2}
 						sx={{ alignItems: 'stretch', minHeight: 'calc(100vh - 80px)' }}
 					>
-						<Card variant='outlined' sx={{ px: 2, minWidth: '260px' }}>
+						<Card variant='outlined' sx={{ minWidth: '260px' }}>
 							{tabIsAllocation ? <AllocationSidebar /> : <EnvironmentSidebar />}
 						</Card>
 						<Card

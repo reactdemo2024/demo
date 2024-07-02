@@ -36,16 +36,19 @@ export enum ProfileType {
 }
 
 export enum Operator {
+    BLANK = '',
     GREATER_THAN = 'GreaterThan',
     LESS_THAN = 'LessThan'
 }
 
 export enum ScaleDirection {
+    BLANK = '',
     INCREASE = 'Increase',
     DECREASE = 'Decrease'
 }
 
 export enum ScaleType {
+    BLANK = '',
     CHANGE_COUNT = 'ChangeCount',
     PERCENT_CHANGE_COUNT = 'PercentChangeCount'
 }
@@ -55,6 +58,7 @@ export enum MetricSource {
 }
 
 export enum SamplingType {
+    BLANK = '',
     AVERAGE = 'Average',
     COUNT = 'Count',
     SUM = 'Sum',
@@ -70,6 +74,7 @@ export enum SamplingType {
 }
 
 export enum MetricAggregation {
+    BLANK = '',
     AVERAGE = 'Average',
     COUNT = 'Count',
     SUM = 'Sum',

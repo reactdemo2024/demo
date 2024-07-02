@@ -48,4 +48,14 @@ export enum Size {
     TOOLTIP_ICON = 12,
     TOOLTIP_TEXT = 18,
     FONT_SMALL = 12,
+    FONT_BOLD = 600,
+}
+
+export enum Color {
+    RED = '#f34f1c',
+    BLUE = '#01a6f0',
+    GREEN = '#7fbc00',
+    YELLOW = '#FFBa01',
+    GREY = '#747474',
+    WHITE = '#FFFFFF',
 }

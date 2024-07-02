@@ -259,7 +259,7 @@ function EnvironmentSidebar() {
 	};
 
 	return (
-		<Box sx={{ mt: 3 }}>
+		<>
 			<Button
 				variant='contained'
 				onClick={handleOpen}
@@ -267,36 +267,12 @@ function EnvironmentSidebar() {
 					position: 'fixed',
 					bottom: 0,
 					left: 0,
-					margin: '20px', // Optional: adds some spacing from the edges
+					ml: '30px',
+					mb: '20px',
 				}}
 			>
 				Generate Environment.ini
 			</Button>
-			{storeJson && (
-				<Box
-					sx={{
-						position: 'fixed',
-						p: 2,
-						border: '1px solid grey',
-						borderRadius: '4px',
-						width: '225px',
-						maxHeight: '78%', // Set a fixed maximum height
-						overflowY: 'auto', // Enable vertical scrolling
-					}}
-				>
-					<Typography variant='subtitle1'>Preview:</Typography>
-					<Typography
-						sx={{
-							whiteSpace: 'pre-wrap',
-							fontSize: Size.FONT_SMALL,
-							maxWidth: '100%',
-							overflowWrap: 'break-word',
-						}}
-					>
-						{storeJson}
-					</Typography>
-				</Box>
-			)}
 			<Dialog
 				open={open}
 				onClose={handleClose}
@@ -323,6 +299,49 @@ function EnvironmentSidebar() {
 					<TextField multiline fullWidth variant='outlined' value={storeJson} />
 				</DialogContent>
 			</Dialog>
+
+			<Stack
+				direction='column'
+				spacing={1}
+				sx={{
+					position: 'fixed',
+					width: '260px',
+					maxHeight: 'calc(100vh - 150px)', // Set a fixed maximum height
+					overflowY: 'auto',
+					mt: 1,
+				}}
+			>
+				<EnvironmentPreview storeJson={storeJson} />
+			</Stack>
+		</>
+	);
+}
+
+function EnvironmentPreview({ storeJson }: { storeJson: string }) {
+	return (
+		<Box sx={{ px: 1 }}>
+			{storeJson && (
+				<>
+					<Typography
+						variant='subtitle1'
+						sx={{
+							fontWeight: Size.FONT_BOLD,
+						}}
+					>
+						Preview:
+					</Typography>
+					<Typography
+						sx={{
+							whiteSpace: 'pre-wrap',
+							fontSize: Size.FONT_SMALL,
+							maxWidth: '100%',
+							overflowWrap: 'break-word',
+						}}
+					>
+						{storeJson}
+					</Typography>
+				</>
+			)}
 		</Box>
 	);
 }
