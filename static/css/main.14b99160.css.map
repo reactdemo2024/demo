@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/main.14b99160.css","mappings":"AACA,EACC,oBACD,CAGA,oBACC,UACD","sources":["App.css"],"sourcesContent":["/* Works on Firefox */\r\n* {\r\n\tscrollbar-width: thin;\r\n}\r\n\r\n/* Works on Chrome, Edge, and Safari */\r\n*::-webkit-scrollbar {\r\n\twidth: 12px;\r\n}"],"names":[],"sourceRoot":""}
