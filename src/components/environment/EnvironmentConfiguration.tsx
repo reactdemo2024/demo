@@ -28,7 +28,7 @@ import { putEncryptionAtHost } from '../../store/environment/encryptionHostSlice
 import { putCustomVMSSTags } from '../../store/environment/customVMSSTagSlice';
 import { putCustomVMSSExtensions } from '../../store/environment/customVMSSExtensionSlice';
 import { putTrustedLaunchMachineFunctions } from '../../store/environment/trustedLaunchMachineFunctionSlice';
-import { LabelText, TooltipText } from '../../enum/environment.enum';
+import { LabelText, TooltipText } from '../../enum/common.enum';
 import {
 	CustomDataGrid,
 	CustomHeader,

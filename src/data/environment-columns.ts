@@ -1,4 +1,6 @@
-import { EnvType, OsType, TooltipText } from "../enum/environment.enum";
+import { customPropertiesColumn } from "../components/Common";
+import { TooltipText } from "../enum/common.enum";
+import { OsType } from "../enum/environment.enum";
 
 export const availabilityZoneColumns = [
     {
@@ -42,20 +44,6 @@ export const subscriptionColumns = [
         field: 'cluster',
         headerName: 'Name of Cluster',
     },
-    {
-        field: 'autopilotEnvType',
-        type: 'singleSelect',
-        valueOptions: EnvType,
-        headerName: 'Environment Type',
-    },
-    // {
-    //     field: 'customProperties',
-    //     headerName: 'Custom Properties',
-    //     width: 300,
-    //     renderHeader: {
-    //         text: TooltipText.CUSTOM_PROPERTIES
-    //     }
-    // },
 ];
 
 export const customVMSSTagColumns = [
@@ -236,12 +224,5 @@ export const diskProfileColumns = [
         type: 'boolean',
         headerName: 'Persistent for E Drive?',
     },
-    {   
-        field: 'customProperties',
-        headerName: 'Custom Properties',
-        width: 300,
-        renderHeader: {
-            text: TooltipText.CUSTOM_PROPERTIES
-        }
-    },
+    ...customPropertiesColumn
 ];

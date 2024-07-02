@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface DiskProfilePayload {
+    id: string;
     name: string;
     machineFunctions: string;
     cDiskSize: string;

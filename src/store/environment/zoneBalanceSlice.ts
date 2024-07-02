@@ -1,8 +1,9 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ZoneBalance } from "../../interface/environment/zone-balance.interface";
 
-export interface ZoneBalancePayload extends ZoneBalance {
+export interface ZoneBalancePayload {
     id: string;
+    machineFunctionName: string;
+    enabled: boolean;
 }
 
 const zoneBalanceSlice = createSlice({

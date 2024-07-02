@@ -20,7 +20,7 @@ import { AllocationType, EapV2 } from '../../enum/allocation.enum';
 import { MachineFunctionPayload } from '../../store/allocation/machineFunctionSlice';
 import { AutoscaleProfilePayload } from '../../store/allocation/autoscaleProfileSlice';
 import { AutoscaleMetricPayload } from '../../store/allocation/autoscaleMetricSlice';
-import { Color, Size } from '../../enum/environment.enum';
+import { Color, Size } from '../../enum/common.enum';
 import { MachineGroupPayload } from '../../store/allocation/machineGroupSlice';
 import { putAllocationPreview } from '../../store/allocation/allocationPreviewSlice';
 
@@ -145,10 +145,10 @@ function AllocationSidebar() {
 	const dispatch = useDispatch();
 	const state = store.getState();
 	const dataFromStore = state.allocationPreview;
-	
+
 	const [open, setOpen] = useState(false);
 	const [storeJson, setStoreJson] = useState(dataFromStore);
-	
+
 	const machineFunctions: MachineFunctionPayload[] = useSelector(
 		(state: any) => state.machineFunctions
 	);
@@ -162,13 +162,13 @@ function AllocationSidebar() {
 	useEffect(() => {
 		dispatch(putAllocationPreview(storeJson));
 	}, [dispatch, storeJson]);
-	
+
 	const handleOpen = () => {
 		const allocationIni = generateAllocationIni();
 		setStoreJson(allocationIni);
 		setOpen(true);
 	};
-	
+
 	const handleClose = () => {
 		setOpen(false);
 	};

@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
   
 const allocationPreviewSlice = createSlice({
     name: 'allocationPreview',
-    initialState: '' as string,
+    initialState: '',
     reducers: {
         putAllocationPreview(state, action: PayloadAction<string>) {
             return action.payload;

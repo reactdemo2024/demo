@@ -1,8 +1,17 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { CustomVMSSExtension } from "../../interface/environment/custom-vmss-extension.interface";
+import { OsType } from "../../enum/environment.enum";
 
-export interface CustomVMSSExtensionPayload extends CustomVMSSExtension {
+export interface CustomVMSSExtensionPayload {
     id: number;
+    name?: string;
+    type?: string;
+    publisher?: string;
+    typeHandlerVersion?: string;
+    autoUpgradeMinorVersion?: boolean;
+    forceUpdateTag?: string;
+    settings?: string;
+    osType?: OsType;
+    machineFunction?: string;
 }
 
 const customVMSSExtensionSlice = createSlice({

@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface AutoscaleProfilePayload {
+    id: string;
     name: string;
     minMachineCount: number;
     defaultMachineCount: number;

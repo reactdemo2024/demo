@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface AutoscaleMetricPayload {
+    id: string;
     name: string;
     metricAccount: string;
     metricNamespace: string;

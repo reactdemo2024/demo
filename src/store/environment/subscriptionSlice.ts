@@ -1,8 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { Subscription } from "../../interface/environment/subscription.interface";
 
-export interface SubscriptionPayload extends Subscription {
+export interface SubscriptionPayload {
     id: string;
+    subscriptionIds?: string;
+    environment?: string;
+    cluster?: string;
     customProperties: string;
 }
 

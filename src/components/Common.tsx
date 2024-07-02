@@ -19,9 +19,18 @@ import {
 	Typography,
 } from '@mui/material';
 import { Delete, InfoOutlined, Add } from '@mui/icons-material';
-import { Size, TooltipText } from '../enum/environment.enum';
-import { useDispatch, useSelector } from 'react-redux';
+import { Size, TooltipText } from '../enum/common.enum';
+import { useDispatch } from 'react-redux';
 import store from '../store/store';
+
+export const customPropertiesColumn = [{   
+    field: 'customProperties',
+    headerName: 'Custom Properties',
+    width: 300,
+    renderHeader: {
+        text: TooltipText.CUSTOM_PROPERTIES
+    }
+}]
 
 interface CustomTooltipProps {
 	tooltip: string;
@@ -99,7 +108,7 @@ export function createDataGridColumns(
 ) {
 	const columns = [
 		...columnTemplate.map((col) => {
-			const baseMinWidth = 150; // Base minimum width
+			const baseMinWidth = 150;
 			const minWidth = Math.max(
 				baseMinWidth,
 				col.renderHeader
@@ -115,7 +124,7 @@ export function createDataGridColumns(
 				minWidth: col.width || minWidth,
 				editable: true,
 				disableColumnMenu: true,
-				valueOptions: col?.valueOptions && Object.values(col.valueOptions),
+				valueOptions: col?.valueOptions ? ['', ...Object.values(col.valueOptions)] : [],
 				renderHeader:
 					col.renderHeader &&
 					((params) => (
@@ -139,7 +148,7 @@ export function createDataGridColumns(
 			editable: false,
 		},
 	];
-
+	
 	return columns;
 }
 
@@ -159,7 +168,9 @@ export const CustomDataGrid: FC<CustomDataGridProps> = ({
 	const [rows, setRows] = useState<GridRowsProp>(
 		dataFromStore as GridRowsProp[]
 	);
-	const [id, setId] = useState(0);
+	const [id, setId] = useState(
+		dataFromStore[dataFromStore.length - 1]?.id + 1 || 0
+	);
 
 	useEffect(() => {
 		dispatch(putDispatch(rows));
@@ -231,7 +242,9 @@ export const CustomTextInput: FC<CustomTextInputProps> = ({
 	const dataFromStore = reducer ? state[reducer as keyof typeof state] : '';
 	const initialCheckboxState = dataFromStore === '*';
 	const [applyToAll, setApplyToAll] = useState(initialCheckboxState);
-	const [applyToAllCheckbox, setApplyToAllCheckbox] = useState(dataFromStore || '');
+	const [applyToAllCheckbox, setApplyToAllCheckbox] = useState(
+		dataFromStore || ''
+	);
 
 	useEffect(() => {
 		if (applyToAll) {

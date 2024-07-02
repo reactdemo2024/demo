@@ -14,7 +14,7 @@ import store from '../../store/store';
 import { CustomVMSSExtensionPayload } from '../../store/environment/customVMSSExtensionSlice';
 import { OutboundRulePayload } from '../../store/environment/outboundRuleSlice';
 import { AzureSLBPayload } from '../../store/environment/azureSLBSlice';
-import { Size } from '../../enum/environment.enum';
+import { Size } from '../../enum/common.enum';
 import { useDispatch } from 'react-redux';
 import { putEnvironmentPreview } from '../../store/environment/environmentPreviewSlice';
 
@@ -69,27 +69,31 @@ const generateEnvironmentIni = () => {
 	}
 
 	/**
-	 * 4 ways to configure subscriptions
+	 * 3 ways to configure subscriptions
 	 * depending on what is filled, will change formatting
 	 *
 	 * environment level subscription
-	 * There are 4 options for subscription configuration and will be formatted based on the filled inputs.
+	 * There are 3 options for subscription configuration and will be formatted based on the filled inputs.
 	 * option 1: SubscriptionIds=<<Replace with comma separated subscription guid>>
 	 * option 2: Environment:<<Environment name>>$SubscriptionIds=<<Replace with comma separated subscription guid>>
 	 * option 3: Cluster:<<Cluster name>>,Environment:<<Environment name>>$SubscriptionIds=<<Replace with comma separated subscription guid>>
-	 * option 4: Cluster:<<Cluster name>>,AutopilotEnvType:<<Environment type>>$SubscriptionIds=<<Replace with comma separated subscription guid>>
 	 *
 	 */
 	subscriptions?.forEach((s) => {
-		if (s.cluster && s.autopilotEnvType && s.subscriptionIds) {
-			// option 4
-			result += `Cluster:${s.cluster},AutopilotEnvType:${s.autopilotEnvType}$SubscriptionIds=${s.subscriptionIds}\n`;
-		} else if (s.cluster && s.environment && s.subscriptionIds) {
+		if (s.cluster && s.environment) {
 			// option 3
-			result += `Cluster:${s.cluster},Environment:${s.environment}$SubscriptionIds=${s.subscriptionIds}\n`;
-		} else if (s.environment && s.subscriptionIds) {
+			result += `Cluster:${s.cluster},Environment:${s.environment}`;
+			result += s.subscriptionIds
+				? `$SubscriptionIds=${s.subscriptionIds}`
+				: '';
+			result += '\n';
+		} else if (s.environment) {
 			// option 2
-			result += `Environment:${s.environment}$SubscriptionIds=${s.subscriptionIds}\n`;
+			result += `Environment:${s.environment}`;
+			result += s.subscriptionIds
+				? `$SubscriptionIds=${s.subscriptionIds}`
+				: '';
+			result += '\n';
 		} else if (s.subscriptionIds) {
 			// option 1
 			result += `SubscriptionIds=${s.subscriptionIds}\n`;
@@ -277,7 +281,7 @@ function EnvironmentSidebar() {
 					position: 'fixed',
 					bottom: 0,
 					left: 0,
-					ml: '30px',
+					ml: '25px',
 					mb: '20px',
 				}}
 			>

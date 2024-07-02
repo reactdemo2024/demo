@@ -1,8 +1,6 @@
+import { customPropertiesColumn } from "../components/Common";
 import { MetricAggregation, Operator, SamplingType, ScaleDirection, ScaleType } from "../enum/allocation.enum";
-import { TooltipText } from "../enum/environment.enum";
-import store from "../store/store";
-
-const state = store.getState();
+import { TooltipText } from "../enum/common.enum";
 
 export const machineFunctionColumns = [
     {
@@ -40,14 +38,7 @@ export const machineFunctionColumns = [
             text: TooltipText.AUTOSCALE_PROFILES
         }
     },
-    {   
-        field: 'customProperties',
-        headerName: 'Custom Properties',
-        width: 300,
-        renderHeader: {
-            text: TooltipText.CUSTOM_PROPERTIES
-        }
-    },
+    ...customPropertiesColumn
 ];
 
 export const machineGroupColumns = [
@@ -67,14 +58,7 @@ export const machineGroupColumns = [
         field: 'sku',
         headerName: 'SKU',
     },
-    {   
-        field: 'customProperties',
-        headerName: 'Custom Properties',
-        width: 300,
-        renderHeader: {
-            text: TooltipText.CUSTOM_PROPERTIES
-        }
-    },
+    ...customPropertiesColumn
 ];
 
 export const autoscaleProfileColumns = [
@@ -101,14 +85,7 @@ export const autoscaleProfileColumns = [
             text: TooltipText.AUTOSCALE_RULES
         }
     },
-    {   
-        field: 'customProperties',
-        headerName: 'Custom Properties',
-        width: 300,
-        renderHeader: {
-            text: TooltipText.CUSTOM_PROPERTIES
-        }
-    },
+    ...customPropertiesColumn
 ];
 
 export const autoscaleRuleColumns = [
@@ -159,14 +136,7 @@ export const autoscaleRuleColumns = [
             text: TooltipText.AUTOSCALE_METRIC
         }
     },
-    {   
-        field: 'customProperties',
-        headerName: 'Custom Properties',
-        width: 300,
-        renderHeader: {
-            text: TooltipText.CUSTOM_PROPERTIES
-        }
-    },
+    ...customPropertiesColumn
 ];
 
 export const autoscaleMetricColumns = [
@@ -202,12 +172,5 @@ export const autoscaleMetricColumns = [
         field: 'metricExcludeFilters',
         headerName: 'Exclude Filters',
     },
-    {   
-        field: 'customProperties',
-        headerName: 'Custom Properties',
-        width: 300,
-        renderHeader: {
-            text: TooltipText.CUSTOM_PROPERTIES
-        }
-    },
+    ...customPropertiesColumn
 ];

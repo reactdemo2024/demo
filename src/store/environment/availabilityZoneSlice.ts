@@ -1,15 +1,19 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { AvailabilityZones } from "../../interface/environment/availability-zones.interface";
+
+export interface AvailabilityZonePayload {
+    availabilityZone: string;
+    availabilityZones: AvailabilityZonesPayload[];
+}
 
 export interface AvailabilityZonesPayload {
     id: string;
-    machineFunctionName: string;
-    availabilityZone: string;
+    machineFunctionName?: string;
+    availabilityZone?: string;
 }
 
 const availabilityZoneSlice = createSlice({
     name: 'availabilityZones',
-    initialState: {} as AvailabilityZones,
+    initialState: {} as AvailabilityZonePayload,
     reducers: {
         putAvailabilityZone(state, action: PayloadAction<string>) {
             state.availabilityZone = action.payload;

@@ -1,11 +1,3 @@
-export enum Default {
-    // ALLOCATION_TYPE = 'AzureVM',
-    // PROFILE_TYPE = 'MetricBased',
-    MAX_CPU_FOR_SAFE_SCALE_DOWN = 90,
-}
-
-// machine function
-
 export enum AllocationType {
     AZURE_VM = 'AzureVM'
 }
@@ -29,26 +21,21 @@ export enum ScaleUnitOption {
     MACHINES_PER_SCALE_UNIT = "machinesPerScaleUnit"
 }
 
-// autoscale
-
 export enum ProfileType {
     METRIC_BASED = 'MetricBased'
 }
 
 export enum Operator {
-    BLANK = '',
     GREATER_THAN = 'GreaterThan',
     LESS_THAN = 'LessThan'
 }
 
 export enum ScaleDirection {
-    BLANK = '',
     INCREASE = 'Increase',
     DECREASE = 'Decrease'
 }
 
 export enum ScaleType {
-    BLANK = '',
     CHANGE_COUNT = 'ChangeCount',
     PERCENT_CHANGE_COUNT = 'PercentChangeCount'
 }
@@ -58,7 +45,6 @@ export enum MetricSource {
 }
 
 export enum SamplingType {
-    BLANK = '',
     AVERAGE = 'Average',
     COUNT = 'Count',
     SUM = 'Sum',
@@ -74,7 +60,6 @@ export enum SamplingType {
 }
 
 export enum MetricAggregation {
-    BLANK = '',
     AVERAGE = 'Average',
     COUNT = 'Count',
     SUM = 'Sum',
