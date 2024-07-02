@@ -9,11 +9,11 @@ import {
 	machineFunctionColumns,
 	machineGroupColumns,
 } from '../../data/allocation-columns';
-import { putMachineFunctions2 } from '../../store/allocation/machineFunctionSlice2';
-import { putMachineGroups2 } from '../../store/allocation/machineGroupSlice2';
+import { putMachineFunctions } from '../../store/allocation/machineFunctionSlice';
+import { putMachineGroups } from '../../store/allocation/machineGroupSlice';
 import { putAutoscaleProfiles } from '../../store/allocation/autoscaleProfileSlice';
-import { putAutoscaleRules2 } from '../../store/allocation/autoscaleRuleSlice2';
-import { putAutoscaleMetrics2 } from '../../store/allocation/autoscaleMetricSlice2';
+import { putAutoscaleRules } from '../../store/allocation/autoscaleRuleSlice';
+import { putAutoscaleMetrics } from '../../store/allocation/autoscaleMetricSlice';
 
 function AllocationConfiguration() {
 	return (
@@ -37,8 +37,8 @@ function AutoscaleMetricConfiguration() {
 				columnList={autoscaleMetricColumns}
 				header='Autoscale Metrics'
 				buttonHeader='Autoscale Metric'
-				putDispatch={putAutoscaleMetrics2}
-				reducer='autoscaleMetrics2'
+				putDispatch={putAutoscaleMetrics}
+				reducer='autoscaleMetrics'
 			/>
 		</>
 	);
@@ -51,8 +51,8 @@ function AutoscaleRuleConfiguration() {
 				columnList={autoscaleRuleColumns}
 				header='Autoscale Rules'
 				buttonHeader='Autoscale Rule'
-				putDispatch={putAutoscaleRules2}
-				reducer='autoscaleRules2'
+				putDispatch={putAutoscaleRules}
+				reducer='autoscaleRules'
 			/>
 		</>
 	);
@@ -79,8 +79,8 @@ function MachineGroupConfiguration() {
 				columnList={machineGroupColumns}
 				header='Machine Groups'
 				buttonHeader='Machine Group'
-				putDispatch={putMachineGroups2}
-				reducer='machineGroups2'
+				putDispatch={putMachineGroups}
+				reducer='machineGroups'
 			/>
 		</>
 	);
@@ -93,8 +93,8 @@ function MachineFunctionConfiguration() {
 				columnList={machineFunctionColumns}
 				header='Machine Functions'
 				buttonHeader='Machine Function'
-				putDispatch={putMachineFunctions2}
-				reducer='machineFunctions2'
+				putDispatch={putMachineFunctions}
+				reducer='machineFunctions'
 			/>
 		</>
 	);

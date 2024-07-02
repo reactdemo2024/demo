@@ -17,11 +17,11 @@ import { FileCopy, FileDownload } from '@mui/icons-material';
 import { useState } from 'react';
 import store from '../../store/store';
 import { AllocationType, EapV2 } from '../../enum/allocation.enum';
-import { MachineFunctionPayload } from '../../store/allocation/machineFunctionSlice2';
+import { MachineFunctionPayload } from '../../store/allocation/machineFunctionSlice';
 import { AutoscaleProfilePayload } from '../../store/allocation/autoscaleProfileSlice';
-import { AutoscaleMetricPayload } from '../../store/allocation/autoscaleMetricSlice2';
+import { AutoscaleMetricPayload } from '../../store/allocation/autoscaleMetricSlice';
 import { Color, Size } from '../../enum/environment.enum';
-import { MachineGroupPayload } from '../../store/allocation/machineGroupSlice2';
+import { MachineGroupPayload } from '../../store/allocation/machineGroupSlice';
 
 const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
 	'& .MuiTreeItem-content': {
@@ -32,11 +32,11 @@ const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
 
 const generateAllocationIni = () => {
 	const state = store.getState();
-	const machineFunctions = state.machineFunctions2;
-	const machineGroups = state.machineGroups2;
+	const machineFunctions = state.machineFunctions;
+	const machineGroups = state.machineGroups;
 	const autoscaleProfiles = state.autoscaleProfiles;
-	const autoscaleRules = state.autoscaleRules2;
-	const autoscaleMetrics = state.autoscaleMetrics2;
+	const autoscaleRules = state.autoscaleRules;
+	const autoscaleMetrics = state.autoscaleMetrics;
 
 	let result = '[ComputeDefinition]\n';
 
@@ -47,7 +47,7 @@ const generateAllocationIni = () => {
 	}
 
 	// [MachineFunction_Foo]
-	machineFunctions?.forEach((mf) => {
+	machineFunctions.forEach((mf) => {
 		result += `\n[MachineFunction_${mf.name}]\n`;
 		Object.keys(mf).forEach((key) => {
 			if (key !== 'name' && key !== 'id' && key !== 'customProperties') {
@@ -142,7 +142,7 @@ const generateAllocationIni = () => {
 
 function AllocationSidebar() {
 	const machineFunctions: MachineFunctionPayload[] = useSelector(
-		(state: any) => state.machineFunctions2
+		(state: any) => state.machineFunctions
 	);
 	const autoscaleProfiles: AutoscaleProfilePayload[] = useSelector(
 		(state: any) => state.autoscaleProfiles
@@ -230,7 +230,7 @@ function AllocationSidebar() {
 				}}
 			>
 				<SimpleTreeView>
-					{machineFunctions.map((mf, index) => (
+					{machineFunctions?.map((mf, index) => (
 						<CustomTreeItem
 							itemId={`machine-function-${index}`}
 							label={
@@ -283,7 +283,7 @@ function AllocationSidebar() {
 											</Typography>
 										}
 									>
-										{autoscaleProfiles.map((autoscaleProfile, apIndex) => {
+										{autoscaleProfiles?.map((autoscaleProfile, apIndex) => {
 											if (
 												autoscaleProfile.name === asp &&
 												autoscaleProfile.autoscaleRules &&

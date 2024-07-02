@@ -1,29 +1,24 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { AutoscaleRule } from "../../interface/allocation/autoscale-rule.interface";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
+export interface AutoscaleRulePayload {
+    name: string;
+    minMachineCount: number;
+    defaultMachineCount: number;
+    maxMachineCount: number;
+    autoscaleRules: string;
+    customProperties: string;
+  }
+  
 const autoscaleRuleSlice = createSlice({
     name: 'autoscaleRules',
-    initialState: [] as AutoscaleRule[],
+    initialState: [] as AutoscaleRulePayload[],
     reducers: {
-        putAutoscaleRule(state, action) {
-            const autoscaleRuleName = action.payload.name;
-            const index = state.findIndex(ar => ar.name === autoscaleRuleName);
-            if (index !== -1) {
-                state[index] = action.payload;
-            } else {
-                state.push(action.payload);
-            }
-        },
-        deleteAutoscaleRule(state, action) {
-            const autoscaleRuleName = action.payload;
-            const index = state.findIndex(ar => ar.name === autoscaleRuleName);
-            if (index !== -1) {
-                state.splice(index, 1);
-            }
+        putAutoscaleRules(state, action: PayloadAction<AutoscaleRulePayload[]>) {
+            return action.payload;
         },
     },
 });
 
-export const { putAutoscaleRule, deleteAutoscaleRule } = autoscaleRuleSlice.actions;
+export const { putAutoscaleRules } = autoscaleRuleSlice.actions;
 
 export default autoscaleRuleSlice.reducer;

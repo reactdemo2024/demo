@@ -1,13 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import computeDefinitionReducer from './allocation/computeDefinitionSlice';
 import machineFunctionsReducer from './allocation/machineFunctionSlice';
-import machineFunctionsReducer2 from './allocation/machineFunctionSlice2';
 import machineGroupsReducer from './allocation/machineGroupSlice';
-import machineGroupsReducer2 from './allocation/machineGroupSlice2';
 import autoscaleMetricReducer from './allocation/autoscaleMetricSlice';
-import autoscaleMetricReducer2 from './allocation/autoscaleMetricSlice2';
 import autoscaleProfileReducer from './allocation/autoscaleProfileSlice';
-import autoscaleRuleReducer2 from './allocation/autoscaleRuleSlice2';
+import autoscaleRuleReducer from './allocation/autoscaleRuleSlice';
 import availabilityZoneReducer from './environment/availabilityZoneSlice';
 import maintenanceControlReducer from './environment/maintenanceControlSlice';
 import zoneBalanceReducer from './environment/zoneBalanceSlice';
@@ -25,18 +21,12 @@ import diskProfileReducer from './environment/diskProfileSlice';
 
 const store = configureStore({
   reducer: {
-    // allocation.ini
-    computeDefinition: computeDefinitionReducer,
+    // // allocation.ini
     machineFunctions: machineFunctionsReducer,
     machineGroups: machineGroupsReducer,
-    autoscaleMetrics: autoscaleMetricReducer,
-    
-    // datagrid
-    machineFunctions2: machineFunctionsReducer2,
-    machineGroups2: machineGroupsReducer2,
     autoscaleProfiles: autoscaleProfileReducer,
-    autoscaleRules2: autoscaleRuleReducer2,
-    autoscaleMetrics2: autoscaleMetricReducer2,
+    autoscaleRules: autoscaleRuleReducer,
+    autoscaleMetrics: autoscaleMetricReducer,
 
     // environment.ini
     availabilityZones: availabilityZoneReducer,

@@ -1,29 +1,26 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AutoscaleMetric } from "../../interface/allocation/autoscale-metric.interface";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
+export interface AutoscaleMetricPayload {
+    name: string;
+    metricAccount: string;
+    metricNamespace: string;
+    samplingType: string;
+    metricAggregation: string;
+    metricIncludeFilters: string;
+    metricExcludeFilters: string;
+    customProperties: string;
+  }
+  
 const autoscaleMetricSlice = createSlice({
     name: 'autoscaleMetrics',
-    initialState: [] as AutoscaleMetric[],
+    initialState: [] as AutoscaleMetricPayload[],
     reducers: {
-        putAutoscaleMetric(state, action: PayloadAction<AutoscaleMetric>) {
-            const metricName = action.payload.name;
-            const index = state.findIndex(m => m.name === metricName);
-            if (index !== -1) {
-                state[index] = action.payload;
-            } else {
-                state.push(action.payload);
-            }
+        putAutoscaleMetrics(state, action: PayloadAction<AutoscaleMetricPayload[]>) {
+            return action.payload;
         },
-        deleteAutoscaleMetric(state, action: PayloadAction<string>) {
-            const metricName = action.payload;
-            const index = state.findIndex(m => m.name === metricName);
-            if (index !== -1) {
-                state.splice(index, 1);
-            }
-        }
-    }
+    },
 });
 
-export const { putAutoscaleMetric, deleteAutoscaleMetric } = autoscaleMetricSlice.actions;
+export const { putAutoscaleMetrics } = autoscaleMetricSlice.actions;
 
 export default autoscaleMetricSlice.reducer;
