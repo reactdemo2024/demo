@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/eap-customer-onboarding/static/js/main.c095a149.js",
+    "index.html": "/eap-customer-onboarding/index.html",
+    "main.c095a149.js.map": "/eap-customer-onboarding/static/js/main.c095a149.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.c095a149.js"
+  ]
+}
