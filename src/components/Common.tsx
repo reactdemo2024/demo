@@ -23,14 +23,16 @@ import { Size, TooltipText } from '../enum/common.enum';
 import { useDispatch } from 'react-redux';
 import store from '../store/store';
 
-export const customPropertiesColumn = [{   
-    field: 'customProperties',
-    headerName: 'Custom Properties',
-    width: 300,
-    renderHeader: {
-        text: TooltipText.CUSTOM_PROPERTIES
-    }
-}]
+export const customPropertiesColumn = [
+	{
+		field: 'customProperties',
+		headerName: 'Custom Properties',
+		width: 300,
+		renderHeader: {
+			text: TooltipText.CUSTOM_PROPERTIES,
+		},
+	},
+];
 
 interface CustomTooltipProps {
 	tooltip: string;
@@ -124,7 +126,9 @@ export function createDataGridColumns(
 				minWidth: col.width || minWidth,
 				editable: true,
 				disableColumnMenu: true,
-				valueOptions: col?.valueOptions ? ['', ...Object.values(col.valueOptions)] : [],
+				valueOptions: col?.valueOptions
+					? ['', ...Object.values(col.valueOptions)]
+					: [],
 				renderHeader:
 					col.renderHeader &&
 					((params) => (
@@ -148,7 +152,7 @@ export function createDataGridColumns(
 			editable: false,
 		},
 	];
-	
+
 	return columns;
 }
 
@@ -214,14 +218,16 @@ export const CustomDataGrid: FC<CustomDataGridProps> = ({
 				</Button>
 			</Stack>
 			<>
-				<DataGrid
-					editMode='row'
-					rows={rows}
-					columns={columns}
-					processRowUpdate={(updatedRow) => handleRowUpdate(updatedRow)}
-					onProcessRowUpdateError={handleProcessRowUpdateError}
-					autoHeight
-				/>
+				{rows.length > 0 && (
+					<DataGrid
+						editMode='row'
+						rows={rows}
+						columns={columns}
+						processRowUpdate={(updatedRow) => handleRowUpdate(updatedRow)}
+						onProcessRowUpdateError={handleProcessRowUpdateError}
+						autoHeight
+					/>
+				)}
 			</>
 		</>
 	);
@@ -257,10 +263,10 @@ export const CustomTextInput: FC<CustomTextInputProps> = ({
 		<>
 			{header && (
 				<Stack direction='row' spacing={3} alignItems='center'>
-					<Stack direction='row' spacing={1} alignItems='center'>
-						<h4>{header}</h4>
-						{tooltip && <CustomTooltip tooltip={tooltip} />}
-					</Stack>
+					<CustomHeader
+						text={header}
+						tooltip={TooltipText.COMMA_SEPARATED}
+					/>
 					{showApplyToAllCheckbox && !showHorizontalCheckbox && (
 						<FormControlLabel
 							control={

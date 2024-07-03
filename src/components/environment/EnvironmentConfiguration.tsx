@@ -87,61 +87,18 @@ function AzureComputeManagerConfiguration() {
 // TODO: refactor to toggle b/w text input and data grid
 // ideas: might have to refactor the header portion into its own component to use the checkbox toggle
 function AvailabilityZoneConfiguration() {
-	const dispatch = useDispatch();
-	const [rows, setRows] = useState<GridRowsProp>([]);
-	const [id, setId] = useState(0);
-	const [allAvailabilityZones, setAllAvailabilityZones] = useState(false);
-	const [availabilityZoneForm, setAvailabilityZoneForm] = useState({
-		availabilityZone: '',
-	});
-
-	useEffect(() => {
-		dispatch(putAvailabilityZones(rows as AvailabilityZonesPayload[]));
-	}, [dispatch, rows]);
-
-	useEffect(() => {
-		dispatch(putAvailabilityZone(availabilityZoneForm.availabilityZone));
-	}, [dispatch, availabilityZoneForm]);
-
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setAvailabilityZoneForm((prevState) => ({
-			...prevState,
-			[name]: value,
-		}));
-	};
-
-	const handleDeleteRow = (id: GridRowId) => {
-		const updatedRows = rows.filter((row) => row.id !== id);
-		setRows(updatedRows);
-	};
-
-	const handleAddRow = () => {
-		const newRow = { id };
-		setRows([...rows, newRow]);
-		setId(id + 1);
-	};
-
-	const handleRowUpdate = (updatedRow: any) => {
-		setRows((prevRows) => {
-			return prevRows.map((row) =>
-				row.id === updatedRow.id ? updatedRow : row
-			);
-		});
-		return updatedRow;
-	};
-
-	const handleProcessRowUpdateError = (error: any) => {
-		console.error('Row update error:', error);
-	};
-
-	const columns: GridColDef[] = createDataGridColumns(
-		availabilityZoneColumns,
-		handleDeleteRow
-	);
-
+	
 	return (
 		<>
+			<CustomTextInput
+				header='Availability Zones'
+				inputLabel='Availability Zone'
+				putDispatch={putAvailabilityZone}
+				showApplyToAllCheckbox={true}
+				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
+				reducer='availabilityZone'
+			/>
+{/* 
 			<Stack direction='row' spacing={3} alignItems='center'>
 				<h4>Availability Zones</h4>
 				<FormControlLabel
@@ -184,7 +141,7 @@ function AvailabilityZoneConfiguration() {
 						autoHeight
 					/>
 				</>
-			)}
+			)} */}
 		</>
 	);
 }
@@ -211,6 +168,7 @@ function AzureMaintenanceControlConfiguration() {
 				inputLabel='Machine Functions to Enable Maintenance Control'
 				putDispatch={putMaintenanceControl}
 				showApplyToAllCheckbox={true}
+				showHorizontalCheckbox={true}
 				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
 				tooltip={TooltipText.COMMA_SEPARATED}
 				reducer='maintenanceControl'
@@ -242,9 +200,10 @@ function EncryptionAtHostConfiguration() {
 				inputLabel='Machine Functions to Enable Encryption at Host'
 				putDispatch={putEncryptionAtHost}
 				showApplyToAllCheckbox={true}
+				showHorizontalCheckbox={true}
 				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
 				tooltip={TooltipText.COMMA_SEPARATED}
-				reducer='encryptionAtHost'
+				reducer='hostEncryption'
 			/>
 		</>
 	);
@@ -258,9 +217,10 @@ function RegionalIPV4MFConfiguration() {
 				inputLabel='Machine Functions to Enable Regional IPV4'
 				putDispatch={putRegionalIPV4MF}
 				showApplyToAllCheckbox={true}
+				showHorizontalCheckbox={true}
 				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
 				tooltip={TooltipText.COMMA_SEPARATED}
-				reducer='regionalIPV4MF'
+				reducer='regionalIPV4'
 			/>
 		</>
 	);
@@ -302,6 +262,7 @@ function TrustedLaunchMachineFunctionConfiguration() {
 				inputLabel='Machine Functions for Trusted Launch'
 				putDispatch={putTrustedLaunchMachineFunctions}
 				showApplyToAllCheckbox={true}
+				showHorizontalCheckbox={true}
 				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
 				tooltip={TooltipText.COMMA_SEPARATED}
 				reducer='trustedLaunchMachineFunctions'
@@ -313,11 +274,9 @@ function TrustedLaunchMachineFunctionConfiguration() {
 function AcceleratedNetworkingConfiguration() {
 	return (
 		<>
-			<CustomHeader
-				text='Accelerated Networking'
-				tooltip={TooltipText.COMMA_SEPARATED}
-			/>
 			<CustomTextInput
+				header='Accelerated Networking'
+				tooltip={TooltipText.COMMA_SEPARATED}
 				inputLabel='Machine Functions for Accelerated Networking Enabled'
 				putDispatch={putAcceleratedNetworkingEnabledMachineFunctions}
 				showApplyToAllCheckbox={true}
