@@ -24,7 +24,12 @@ export enum Size {
     TOOLTIP_ICON = 12,
     TOOLTIP_TEXT = 18,
     FONT_SMALL = 12,
+    FONT_MEDIUM = 14,
     FONT_BOLD = 600,
+}
+
+export enum Font {
+    MONOSPACE = '"Inconsolata", Consolas, monospace',
 }
 
 export enum Color {

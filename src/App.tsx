@@ -15,6 +15,7 @@ import EnvironmentSidebar from './components/environment/EnvironmentSidebar';
 import { Provider } from 'react-redux';
 import store from './store/store';
 import { useState } from 'react';
+import logo from './assets/logo-microsoft-96.png';
 
 export default function App() {
 	const [tabIsAllocation, setTabIsAllocation] = useState(true);
@@ -39,7 +40,19 @@ export default function App() {
 		<Provider store={store}>
 			<ThemeProvider theme={theme}>
 				<Typography>
-					<Box sx={{ width: '100%' }} mb={2}>
+					<Box
+						sx={{ width: '100%', display: 'flex', alignItems: 'center', mb: 2 }}
+					>
+						<Box
+							component='img'
+							sx={{
+								height: '100%', 
+								width: 'auto',
+								maxHeight: { xs: 48, sm: 48, md: 48 },
+							}}
+							src={logo}
+							alt='Microsoft Logo'
+						/>
 						<Tabs
 							onChange={handleTabChange}
 							value={tabIsAllocation ? 0 : 1}

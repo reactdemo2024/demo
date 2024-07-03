@@ -20,7 +20,7 @@ import { AllocationType, EapV2 } from '../../enum/allocation.enum';
 import { MachineFunctionPayload } from '../../store/allocation/machineFunctionSlice';
 import { AutoscaleProfilePayload } from '../../store/allocation/autoscaleProfileSlice';
 import { AutoscaleMetricPayload } from '../../store/allocation/autoscaleMetricSlice';
-import { Color, Size } from '../../enum/common.enum';
+import { Color, Font, Size } from '../../enum/common.enum';
 import { MachineGroupPayload } from '../../store/allocation/machineGroupSlice';
 import { putAllocationPreview } from '../../store/allocation/allocationPreviewSlice';
 
@@ -211,7 +211,7 @@ function AllocationSidebar() {
 					spacing={2}
 					sx={{ pt: 3, pl: 3, pr: 3, justifyContent: 'space-between' }}
 				>
-					<DialogTitle>allocation.ini</DialogTitle>
+					<DialogTitle variant='h6'>allocation.ini</DialogTitle>
 					<Stack direction='row' spacing={2}>
 						<Button variant='text' onClick={handleDownload} size='small'>
 							<FileDownload />
@@ -224,7 +224,13 @@ function AllocationSidebar() {
 					</Stack>
 				</Stack>
 				<DialogContent>
-					<TextField multiline fullWidth variant='outlined' value={storeJson} />
+					<TextField
+						multiline
+						fullWidth
+						variant='outlined'
+						value={storeJson}
+						inputProps={{ style: { fontFamily: Font.MONOSPACE } }}
+					/>
 				</DialogContent>
 			</Dialog>
 
@@ -244,11 +250,11 @@ function AllocationSidebar() {
 							itemId={`machine-function-${index}`}
 							label={
 								<Typography
+									variant='subtitle1'
 									sx={{
 										backgroundColor: Color.RED,
 										py: '4px',
 										pl: 1,
-										fontWeight: Size.FONT_BOLD,
 									}}
 								>
 									{mf.name}
@@ -262,11 +268,11 @@ function AllocationSidebar() {
 										itemId={`machine-group-${index}-${mgIndex}`}
 										label={
 											<Typography
+												variant='subtitle1'
 												sx={{
 													backgroundColor: Color.GREEN,
 													py: '4px',
 													pl: 1,
-													fontWeight: Size.FONT_BOLD,
 												}}
 											>
 												{mg}
@@ -281,11 +287,11 @@ function AllocationSidebar() {
 										itemId={`autoscale-profile-${index}-${aspIndex}`}
 										label={
 											<Typography
+												variant='subtitle1'
 												sx={{
 													backgroundColor: Color.BLUE,
 													py: '4px',
 													pl: 1,
-													fontWeight: Size.FONT_BOLD,
 												}}
 											>
 												{asp}
@@ -305,11 +311,11 @@ function AllocationSidebar() {
 															itemId={`${index}-${apIndex}-${asrIndex}`}
 															label={
 																<Typography
+																	variant='subtitle1'
 																	sx={{
 																		backgroundColor: Color.YELLOW,
 																		py: '4px',
 																		pl: 1,
-																		fontWeight: Size.FONT_BOLD,
 																	}}
 																>
 																	{asr}
@@ -348,7 +354,8 @@ function AllocationPreview({ storeJson }: { storeJson: string }) {
 					<Typography
 						sx={{
 							whiteSpace: 'pre-wrap',
-							fontSize: Size.FONT_SMALL,
+							fontSize: Size.FONT_MEDIUM,
+							fontFamily: Font.MONOSPACE,
 							maxWidth: '100%',
 							overflowWrap: 'break-word',
 						}}

@@ -14,7 +14,7 @@ import store from '../../store/store';
 import { CustomVMSSExtensionPayload } from '../../store/environment/customVMSSExtensionSlice';
 import { OutboundRulePayload } from '../../store/environment/outboundRuleSlice';
 import { AzureSLBPayload } from '../../store/environment/azureSLBSlice';
-import { Size } from '../../enum/common.enum';
+import { Font, Size } from '../../enum/common.enum';
 import { useDispatch } from 'react-redux';
 import { putEnvironmentPreview } from '../../store/environment/environmentPreviewSlice';
 
@@ -297,7 +297,7 @@ function EnvironmentSidebar() {
 					spacing={2}
 					sx={{ pt: 3, pl: 3, pr: 3, justifyContent: 'space-between' }}
 				>
-					<DialogTitle>environment.ini</DialogTitle>
+					<DialogTitle variant='h6'>environment.ini</DialogTitle>
 					<Stack direction='row' spacing={2}>
 						<Button variant='text' onClick={handleDownload} size='small'>
 							<FileDownload />
@@ -310,7 +310,13 @@ function EnvironmentSidebar() {
 					</Stack>
 				</Stack>
 				<DialogContent>
-					<TextField multiline fullWidth variant='outlined' value={storeJson} />
+					<TextField
+						multiline
+						fullWidth
+						variant='outlined'
+						value={storeJson}
+						inputProps={{ style: { fontFamily: Font.MONOSPACE } }}
+					/>
 				</DialogContent>
 			</Dialog>
 
@@ -347,7 +353,8 @@ function EnvironmentPreview({ storeJson }: { storeJson: string }) {
 					<Typography
 						sx={{
 							whiteSpace: 'pre-wrap',
-							fontSize: Size.FONT_SMALL,
+							fontSize: Size.FONT_MEDIUM,
+							fontFamily: Font.MONOSPACE,
 							maxWidth: '100%',
 							overflowWrap: 'break-word',
 						}}
