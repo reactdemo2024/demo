@@ -22,6 +22,7 @@ import { Delete, InfoOutlined, Add } from '@mui/icons-material';
 import { Size, TooltipText } from '../enum/common.enum';
 import { useDispatch } from 'react-redux';
 import store from '../store/store';
+import { AvailabilityZonesPayload } from '../store/environment/availabilityZoneSlice';
 
 export const customPropertiesColumn = [
 	{
@@ -46,7 +47,7 @@ interface CustomRenderHeaderWithTooltipProps {
 
 interface CustomDataGridProps {
 	columnList: any[];
-	header: string;
+	header?: string;
 	buttonHeader: string;
 	putDispatch: Function;
 	tooltip?: string;
@@ -62,6 +63,27 @@ interface CustomTextInputProps {
 	checkboxLabel?: string;
 	tooltip?: string;
 	reducer?: string;
+}
+
+interface CustomDataGridAndTextInputToggleProps {
+	columnList: any[];
+	header?: string;
+	buttonHeader: string;
+	putDispatchDataGrid: Function;
+	putDispatchTextInput: Function;
+	reducerDataGrid: string;
+	reducerTextInput: string;
+	tooltipDataGrid?: string;
+	tooltipTextInput?: string;
+	inputLabel: string;
+	checkboxLabel?: string;
+}
+
+interface CustomCheckboxProps {
+	checkboxLabel?: string;
+	isChecked: boolean;
+	setIsChecked: Function;
+	setTextInput?: Function;
 }
 
 interface CustomHeaderProps {
@@ -166,12 +188,25 @@ export const CustomDataGrid: FC<CustomDataGridProps> = ({
 }) => {
 	const dispatch = useDispatch();
 	const state = store.getState();
-	const dataFromStore = reducer
-		? (state[reducer as keyof typeof state] as any[])
-		: [];
+
+	let dataFromStore: any[];
+	if (reducer) {
+		const [rootReducer, subReducer] = reducer.includes('.')
+			? reducer.split('.')
+			: [reducer, undefined];
+		const dataFromRootStore = state[rootReducer as keyof typeof state] as any[];
+		dataFromStore =
+			subReducer && Object.keys(dataFromRootStore).length > 0
+				? dataFromRootStore[subReducer as keyof typeof dataFromRootStore]
+				: Array.isArray(dataFromRootStore)
+				? dataFromRootStore
+				: [];
+	} else dataFromStore = [];
+
 	const [rows, setRows] = useState<GridRowsProp>(
 		dataFromStore as GridRowsProp[]
 	);
+
 	const [id, setId] = useState(
 		dataFromStore[dataFromStore.length - 1]?.id + 1 || 0
 	);
@@ -209,10 +244,7 @@ export const CustomDataGrid: FC<CustomDataGridProps> = ({
 	return (
 		<>
 			<Stack direction='row' spacing={3} alignItems='center'>
-				<Stack direction='row' spacing={1} alignItems='center'>
-					<h4>{header}</h4>
-					{tooltip && <CustomTooltip tooltip={tooltip} />}
-				</Stack>
+				{header && <CustomHeader text={header} tooltip={tooltip} />}
 				<Button variant='text' onClick={handleAddRow} startIcon={<Add />}>
 					{buttonHeader}
 				</Button>
@@ -245,43 +277,42 @@ export const CustomTextInput: FC<CustomTextInputProps> = ({
 }) => {
 	const dispatch = useDispatch();
 	const state = store.getState();
-	const dataFromStore = reducer ? state[reducer as keyof typeof state] : '';
+
+	let dataFromStore;
+	if (reducer) {
+		const [rootReducer, subReducer] = reducer.includes('.')
+			? reducer.split('.')
+			: [reducer, undefined];
+		const dataFromRootStore = state[rootReducer as keyof typeof state];
+		dataFromStore =
+			subReducer && dataFromRootStore
+				? dataFromRootStore[subReducer as keyof typeof dataFromRootStore]
+				: dataFromRootStore || '';
+	} else dataFromStore = '';
+
 	const initialCheckboxState = dataFromStore === '*';
-	const [applyToAll, setApplyToAll] = useState(initialCheckboxState);
-	const [applyToAllCheckbox, setApplyToAllCheckbox] = useState(
-		dataFromStore || ''
-	);
+	const [isChecked, setIsChecked] = useState(initialCheckboxState);
+	const [textInput, setTextInput] = useState(dataFromStore || '');
 
 	useEffect(() => {
-		if (applyToAll) {
-			setApplyToAllCheckbox('*');
+		if (isChecked || textInput === '*') {
+			setIsChecked(true);
+			setTextInput('*');
 		}
-		dispatch(putDispatch(applyToAllCheckbox));
-	}, [applyToAll, applyToAllCheckbox, dispatch, putDispatch]);
+		dispatch(putDispatch(textInput));
+	}, [isChecked, textInput, dispatch, putDispatch]);
 
 	return (
 		<>
 			{header && (
 				<Stack direction='row' spacing={3} alignItems='center'>
-					<CustomHeader
-						text={header}
-						tooltip={TooltipText.COMMA_SEPARATED}
-					/>
+					<CustomHeader text={header} tooltip={tooltip} />
 					{showApplyToAllCheckbox && !showHorizontalCheckbox && (
-						<FormControlLabel
-							control={
-								<Checkbox
-									checked={applyToAll}
-									onChange={(e) => {
-										setApplyToAll(e.target.checked);
-										if (!e.target.checked) {
-											setApplyToAllCheckbox('');
-										}
-									}}
-									size='small'
-								/>
-							}
-							label={checkboxLabel}
+						<CustomCheckbox
+							checkboxLabel={checkboxLabel}
+							isChecked={isChecked}
+							setIsChecked={setIsChecked}
+							setTextInput={setTextInput}
 						/>
 					)}
 				</Stack>
@@ -291,30 +322,127 @@ export const CustomTextInput: FC<CustomTextInputProps> = ({
 					label={inputLabel}
 					type='text'
 					variant='outlined'
-					value={applyToAllCheckbox}
-					onChange={(e) => setApplyToAllCheckbox(e.target.value)}
-					disabled={applyToAll}
+					value={textInput}
+					onChange={(e) => setTextInput(e.target.value)}
+					disabled={isChecked || textInput === '*'}
 					InputLabelProps={{ shrink: true }}
 					style={{ width: 400 }}
 				/>
 				{showApplyToAllCheckbox && showHorizontalCheckbox && (
-					<FormControlLabel
-						control={
-							<Checkbox
-								checked={applyToAll}
-								onChange={(e) => {
-									setApplyToAll(e.target.checked);
-									if (!e.target.checked) {
-										setApplyToAllCheckbox('');
-									}
-								}}
-								size='small'
-							/>
-						}
-						label={checkboxLabel}
+					<CustomCheckbox
+						checkboxLabel={checkboxLabel}
+						isChecked={isChecked}
+						setIsChecked={setIsChecked}
+						setTextInput={setTextInput}
 					/>
 				)}
 			</Stack>
+		</>
+	);
+};
+
+export const CustomDataGridAndTextInputToggle: FC<
+	CustomDataGridAndTextInputToggleProps
+> = ({
+	columnList,
+	header,
+	buttonHeader,
+	putDispatchDataGrid,
+	putDispatchTextInput,
+	reducerDataGrid,
+	reducerTextInput,
+	tooltipTextInput,
+	tooltipDataGrid,
+	inputLabel,
+	checkboxLabel,
+}) => {
+	const dispatch = useDispatch();
+	const state = store.getState();
+
+	let dataFromStore;
+	if (reducerDataGrid) {
+		const [rootReducer, subReducer] = reducerDataGrid.includes('.')
+			? reducerDataGrid.split('.')
+			: [reducerDataGrid, undefined];
+		const dataFromRootStore = state[rootReducer as keyof typeof state] as any[];
+		dataFromStore =
+			subReducer && Object.keys(dataFromRootStore).length > 0
+				? dataFromRootStore[subReducer as keyof typeof dataFromRootStore]
+				: Array.isArray(dataFromRootStore)
+				? dataFromRootStore
+				: [];
+	} else dataFromStore = [];
+
+	const [rows, setRows] = useState<GridRowsProp>(
+		dataFromStore as GridRowsProp[]
+	);
+
+	const [id, setId] = useState(
+		dataFromStore[dataFromStore.length - 1]?.id + 1 || 0
+	);
+
+	useEffect(() => {
+		dispatch(putDispatchDataGrid(rows));
+	}, [dispatch, putDispatchDataGrid, rows]);
+
+	const handleDeleteRow = (id: GridRowId) => {
+		const updatedRows = rows.filter((row) => row.id !== id);
+		setRows(updatedRows);
+	};
+
+	const handleAddRow = () => {
+		const newRow = { id };
+		setRows([...rows, newRow]);
+		setId(id + 1);
+	};
+
+	const handleRowUpdate = (updatedRow: any) => {
+		setRows((prevRows) => {
+			return prevRows.map((row) =>
+				row.id === updatedRow.id ? updatedRow : row
+			);
+		});
+		return updatedRow;
+	};
+
+	const handleProcessRowUpdateError = (error: any) => {
+		console.error('Row update error:', error);
+	};
+
+	const columns = createDataGridColumns(columnList, handleDeleteRow);
+
+	return (
+		<>
+			<Stack direction='row' spacing={3} alignItems='center'>
+				{header && (
+					<CustomHeader
+						text={header}
+						tooltip={rows.length === 0 ? tooltipTextInput : tooltipDataGrid}
+					/>
+				)}
+				<Button variant='text' onClick={handleAddRow} startIcon={<Add />}>
+					{buttonHeader}
+				</Button>
+			</Stack>
+			{rows.length === 0 ? (
+				<CustomTextInput
+					inputLabel={inputLabel}
+					putDispatch={putDispatchTextInput}
+					showApplyToAllCheckbox={true}
+					showHorizontalCheckbox={true}
+					checkboxLabel={checkboxLabel}
+					reducer={reducerTextInput}
+				/>
+			) : (
+				<DataGrid
+					editMode='row'
+					rows={rows}
+					columns={columns}
+					processRowUpdate={(updatedRow) => handleRowUpdate(updatedRow)}
+					onProcessRowUpdateError={handleProcessRowUpdateError}
+					autoHeight
+				/>
+			)}
 		</>
 	);
 };
@@ -326,6 +454,33 @@ export const CustomHeader: FC<CustomHeaderProps> = ({ text, tooltip }) => {
 				<h4>{text}</h4>
 				{tooltip && <CustomTooltip tooltip={tooltip} />}
 			</Stack>
+		</>
+	);
+};
+
+export const CustomCheckbox: FC<CustomCheckboxProps> = ({
+	checkboxLabel,
+	isChecked,
+	setIsChecked,
+	setTextInput,
+}) => {
+	return (
+		<>
+			<FormControlLabel
+				control={
+					<Checkbox
+						checked={isChecked}
+						onChange={(e) => {
+							setIsChecked(e.target.checked);
+							if (!e.target.checked) {
+								setTextInput && setTextInput('');
+							}
+						}}
+						size='small'
+					/>
+				}
+				label={checkboxLabel}
+			/>
 		</>
 	);
 };

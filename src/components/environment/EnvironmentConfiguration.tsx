@@ -1,22 +1,8 @@
 import {
-	Button,
-	Checkbox,
-	FormControlLabel,
 	Stack,
-	TextField,
 	Typography,
 } from '@mui/material';
 import {
-	DataGrid,
-	GridRowsProp,
-	GridColDef,
-	GridRowId,
-} from '@mui/x-data-grid';
-import { Add } from '@mui/icons-material';
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import {
-	AvailabilityZonesPayload,
 	putAvailabilityZone,
 	putAvailabilityZones,
 } from '../../store/environment/availabilityZoneSlice';
@@ -31,9 +17,8 @@ import { putTrustedLaunchMachineFunctions } from '../../store/environment/truste
 import { LabelText, TooltipText } from '../../enum/common.enum';
 import {
 	CustomDataGrid,
-	CustomHeader,
+	CustomDataGridAndTextInputToggle,
 	CustomTextInput,
-	createDataGridColumns,
 } from '../Common';
 import {
 	availabilityZoneColumns,
@@ -84,64 +69,21 @@ function AzureComputeManagerConfiguration() {
 	);
 }
 
-// TODO: refactor to toggle b/w text input and data grid
-// ideas: might have to refactor the header portion into its own component to use the checkbox toggle
 function AvailabilityZoneConfiguration() {
-	
 	return (
 		<>
-			<CustomTextInput
+			<CustomDataGridAndTextInputToggle
+				columnList={availabilityZoneColumns}
 				header='Availability Zones'
+				buttonHeader='Availability Zone'
+				putDispatchDataGrid={putAvailabilityZones}
+				putDispatchTextInput={putAvailabilityZone}
+				reducerDataGrid='availabilityZones.availabilityZones'
+				reducerTextInput='availabilityZones.availabilityZone'
 				inputLabel='Availability Zone'
-				putDispatch={putAvailabilityZone}
-				showApplyToAllCheckbox={true}
 				checkboxLabel={LabelText.ENABLE_ALL_MACHINE_FUNCTIONS}
-				reducer='availabilityZone'
+				tooltipTextInput={TooltipText.COMMA_SEPARATED}
 			/>
-{/* 
-			<Stack direction='row' spacing={3} alignItems='center'>
-				<h4>Availability Zones</h4>
-				<FormControlLabel
-					control={
-						<Checkbox
-							checked={allAvailabilityZones}
-							onChange={(event) =>
-								setAllAvailabilityZones(event.target.checked)
-							}
-							size='small'
-						/>
-					}
-					label='Apply to All Machine Functions'
-				/>
-				{!allAvailabilityZones && (
-					<Button variant='text' onClick={handleAddRow} startIcon={<Add />}>
-						Availability Zone
-					</Button>
-				)}
-			</Stack>
-			{allAvailabilityZones ? (
-				<TextField
-					name='availabilityZone'
-					label='Availability Zone'
-					type='text'
-					variant='outlined'
-					InputLabelProps={{ shrink: true }}
-					value={availabilityZoneForm.availabilityZone}
-					onChange={handleInputChange}
-					style={{ width: 400 }}
-				/>
-			) : (
-				<>
-					<DataGrid
-						editMode='row'
-						rows={rows}
-						columns={columns}
-						processRowUpdate={(updatedRow) => handleRowUpdate(updatedRow)}
-						onProcessRowUpdateError={handleProcessRowUpdateError}
-						autoHeight
-					/>
-				</>
-			)} */}
 		</>
 	);
 }
@@ -318,7 +260,6 @@ function SNATOutboundConfiguration() {
 	);
 }
 
-// TODO: refactor so you can select from created disk profiles and the table shows the drive settings for the selected one
 function DiskProfileConfiguration() {
 	return (
 		<>
