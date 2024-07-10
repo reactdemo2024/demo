@@ -9,6 +9,9 @@ import {
 	Typography,
 	createTheme,
 	ThemeProvider,
+	FormControlLabel,
+	Switch,
+	Slide,
 } from '@mui/material';
 import AllocationSidebar from './components/allocation/AllocationSidebar';
 import EnvironmentSidebar from './components/environment/EnvironmentSidebar';
@@ -19,6 +22,7 @@ import logo from './assets/logo-microsoft-96.png';
 
 export default function App() {
 	const [tabIsAllocation, setTabIsAllocation] = useState(true);
+	const [tabIsCollapsed, setTabIsCollapsed] = useState(false);
 
 	const handleTabChange = (e: any, tabIndex: number) => {
 		setTabIsAllocation(tabIndex === 0);
@@ -29,7 +33,14 @@ export default function App() {
 			MuiMenuItem: {
 				styleOverrides: {
 					root: {
-						height: 32, // height for each menu item
+						height: 32,
+					},
+				},
+			},
+			MuiAutocomplete: {
+				styleOverrides: {
+					option: {
+						height: 32,
 					},
 				},
 			},
@@ -46,7 +57,7 @@ export default function App() {
 						<Box
 							component='img'
 							sx={{
-								height: '100%', 
+								height: '100%',
 								width: 'auto',
 								maxHeight: { xs: 48, sm: 48, md: 48 },
 							}}
@@ -63,14 +74,44 @@ export default function App() {
 							<Tab label='Environment Configuration' />
 						</Tabs>
 					</Box>
+					<Box sx={{ ml: 1 }}>
+						<FormControlLabel
+							control={
+								<Switch
+									checked={tabIsCollapsed}
+									onChange={() => setTabIsCollapsed((prev) => !prev)}
+									size='small'
+								/>
+							}
+							label={
+								<Typography variant='subtitle2' sx={{ pl: '4px' }}>
+									Toggle Sidebar
+								</Typography>
+							}
+						/>
+					</Box>
 					<Stack
 						direction='row'
 						spacing={2}
 						sx={{ alignItems: 'stretch', minHeight: 'calc(100vh - 80px)' }}
 					>
-						<Card variant='outlined' sx={{ minWidth: '260px' }}>
-							{tabIsAllocation ? <AllocationSidebar /> : <EnvironmentSidebar />}
-						</Card>
+						<Slide
+							in={tabIsCollapsed}
+							direction='right'
+							mountOnEnter
+							unmountOnExit
+						>
+							<Card
+								variant='outlined'
+								sx={{ minWidth: tabIsCollapsed ? '260px' : '0' }}
+							>
+								{tabIsAllocation ? (
+									<AllocationSidebar />
+								) : (
+									<EnvironmentSidebar />
+								)}
+							</Card>
+						</Slide>
 						<Card
 							variant='outlined'
 							sx={{ px: 2, width: '-webkit-fill-available' }}
