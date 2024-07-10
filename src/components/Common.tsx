@@ -9,8 +9,10 @@ import {
 } from '@mui/x-data-grid';
 import { FC, useEffect, useState } from 'react';
 import {
+	Autocomplete,
 	Button,
 	Checkbox,
+	Chip,
 	FormControlLabel,
 	IconButton,
 	Stack,
@@ -18,11 +20,15 @@ import {
 	Tooltip,
 	Typography,
 } from '@mui/material';
-import { Delete, InfoOutlined, Add } from '@mui/icons-material';
+import {
+	Delete,
+	InfoOutlined,
+	Add,
+	QuestionMarkOutlined,
+} from '@mui/icons-material';
 import { Size, TooltipText } from '../enum/common.enum';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import store from '../store/store';
-import { AvailabilityZonesPayload } from '../store/environment/availabilityZoneSlice';
 
 export const customPropertiesColumn = [
 	{
@@ -36,13 +42,15 @@ export const customPropertiesColumn = [
 ];
 
 interface CustomTooltipProps {
-	tooltip: string;
+	tooltip?: string;
 	size?: number;
+	link?: string;
 }
 
 interface CustomRenderHeaderWithTooltipProps {
 	params: GridColumnHeaderParams;
 	text: string;
+	link?: string;
 }
 
 interface CustomDataGridProps {
@@ -89,41 +97,89 @@ interface CustomCheckboxProps {
 interface CustomHeaderProps {
 	text: string;
 	tooltip?: string;
+	link?: string;
 }
 
-export const CustomTooltip: FC<CustomTooltipProps> = ({ tooltip, size }) => {
+export const CustomTooltip: FC<CustomTooltipProps> = ({
+	tooltip,
+	size,
+	link,
+}) => {
+	const questionMarkSize = size ? size - 5 : 15;
 	return (
-		<Tooltip
-			title={
-				<Typography
-					sx={{ whiteSpace: 'pre-line', fontSize: Size.TOOLTIP_ICON }}
+		<>
+			{tooltip && (
+				<Tooltip
+					title={
+						<Typography
+							sx={{ whiteSpace: 'pre-line', fontSize: Size.TOOLTIP_ICON }}
+						>
+							{tooltip}
+						</Typography>
+					}
+					PopperProps={{
+						sx: {
+							'& .MuiTooltip-tooltip': {
+								maxWidth: 'none',
+								width: 'auto',
+							},
+						},
+					}}
 				>
-					{tooltip}
-				</Typography>
-			}
-			PopperProps={{
-				sx: {
-					'& .MuiTooltip-tooltip': {
-						maxWidth: 'none',
-						width: 'auto',
-					},
-				},
-			}}
-		>
-			<InfoOutlined sx={{ fontSize: size || 20 }} />
-		</Tooltip>
+					<InfoOutlined sx={{ fontSize: size || 20 }} />
+				</Tooltip>
+			)}
+			{link && (
+				<Tooltip
+					title={
+						<Typography
+							sx={{ whiteSpace: 'pre-line', fontSize: Size.TOOLTIP_ICON }}
+						>
+							View EAP documentation
+						</Typography>
+					}
+					PopperProps={{
+						sx: {
+							'& .MuiTooltip-tooltip': {
+								maxWidth: 'none',
+								width: 'auto',
+							},
+						},
+					}}
+				>
+					<a
+						href={link}
+						target='_blank'
+						rel='noreferrer'
+						style={{
+							display: 'flex',
+							justifyContent: 'center',
+							alignItems: 'center',
+						}}
+					>
+						<QuestionMarkOutlined sx={{ fontSize: questionMarkSize }} />
+					</a>
+				</Tooltip>
+			)}
+		</>
 	);
 };
 
 export const CustomRenderHeaderWithTooltip: FC<
 	CustomRenderHeaderWithTooltipProps
-> = ({ params, text }) => {
+> = ({ params, text, link }) => {
 	return (
 		<Stack direction='row' spacing={1} alignItems='center'>
 			<span>{params.colDef.headerName}</span>
-			<CustomTooltip tooltip={text} size={Size.TOOLTIP_TEXT} />
+			<CustomTooltip tooltip={text} size={Size.TOOLTIP_TEXT} link={link} />
 		</Stack>
 	);
+};
+
+const useValueOptions = (reducer: string) => {
+	const valueOptions: any[] = useSelector((state: any) => state[reducer]);
+	const optionsList = valueOptions.map((value) => value.name);
+	return optionsList;
 };
 
 export function createDataGridColumns(
@@ -131,6 +187,38 @@ export function createDataGridColumns(
 	handleDeleteRow: any
 ) {
 	const columns = [
+		// {
+		// 	field: 'multiSelect',
+		// 	headerName: 'Multi Select',
+		// 	flex: 1,
+		// 	minWidth: 400,
+		// 	editable: true,
+		// 	disableColumnMenu: true,
+		// 	renderCell: (params: any) => {
+		// 		return (
+		// 			<Autocomplete
+		// 				multiple
+		// 				id='tags-outlined'
+		// 				options={['1', '2']} // Replace 'yourReducer' with your actual reducer
+		// 				getOptionLabel={(option) => option}
+		// 				defaultValue={[]}
+		// 				filterSelectedOptions
+		// 				renderTags={(value, getTagProps) =>
+		// 					value.map((option, index) => (
+		// 						<Chip
+		// 							variant='outlined'
+		// 							label={option}
+		// 							{...getTagProps({ index })}
+		// 						/>
+		// 					))
+		// 				}
+		// 				renderInput={(params) => (
+		// 					<TextField {...params} variant='outlined' />
+		// 				)}
+		// 			/>
+		// 		);
+		// 	},
+		// },
 		...columnTemplate.map((col) => {
 			const baseMinWidth = 150;
 			const minWidth = Math.max(
@@ -148,17 +236,48 @@ export function createDataGridColumns(
 				minWidth: col.width || minWidth,
 				editable: true,
 				disableColumnMenu: true,
-				valueOptions: col?.valueOptions
-					? ['', ...Object.values(col.valueOptions)]
-					: [],
+				valueOptions:
+					!col.multiSelect &&
+					(col?.valueOptions
+						? col?.valueOptions?.reducer
+							? ['', ...useValueOptions(col.valueOptions.reducer)]
+							: ['', ...Object.values(col.valueOptions)]
+						: []),
 				renderHeader:
 					col.renderHeader &&
 					((params) => (
 						<CustomRenderHeaderWithTooltip
 							params={params}
 							text={col.renderHeader!.text}
+							link={col.renderHeader!.link}
 						/>
 					)),
+				// renderCell:
+				// 	col.multiSelect &&
+				// 	col.multiSelect?.reducer &&
+				// 	((params) => {
+				// 		return (
+				// 			<Autocomplete
+				// 				multiple
+				// 				options={['', ...useValueOptions(col.multiSelect.reducer)]}
+				// 				getOptionLabel={(option) => option}
+				// 				defaultValue={[]}
+				// 				filterSelectedOptions
+				// 				renderTags={(value, getTagProps) =>
+				// 					value.map((option, index) => (
+				// 						<Chip
+				// 							variant='outlined'
+				// 							label={option}
+				// 							{...getTagProps({ index })}
+				// 						/>
+				// 					))
+				// 				}
+				// 				renderInput={(params) => (
+				// 					<TextField {...params} variant='outlined' />
+				// 				)}
+				// 			/>
+				// 		);
+				// 	}),
 			} as GridColDef;
 		}),
 		{
@@ -317,17 +436,24 @@ export const CustomTextInput: FC<CustomTextInputProps> = ({
 					)}
 				</Stack>
 			)}
-			<Stack direction='row' spacing={1} alignItems='center'>
-				<TextField
-					label={inputLabel}
-					type='text'
-					variant='outlined'
-					value={textInput}
-					onChange={(e) => setTextInput(e.target.value)}
-					disabled={isChecked || textInput === '*'}
-					InputLabelProps={{ shrink: true }}
-					style={{ width: 400 }}
-				/>
+			<Stack
+				direction='row'
+				spacing={1}
+				alignItems='center'
+				style={{ flexWrap: 'nowrap' }}
+			>
+				<div style={{ flexGrow: 1 }}>
+					<TextField
+						label={inputLabel}
+						type='text'
+						variant='outlined'
+						value={textInput}
+						onChange={(e) => setTextInput(e.target.value)}
+						disabled={isChecked || textInput === '*'}
+						InputLabelProps={{ shrink: true }}
+						style={{ width: '100%' }}
+					/>
+				</div>
 				{showApplyToAllCheckbox && showHorizontalCheckbox && (
 					<CustomCheckbox
 						checkboxLabel={checkboxLabel}
@@ -447,12 +573,16 @@ export const CustomDataGridAndTextInputToggle: FC<
 	);
 };
 
-export const CustomHeader: FC<CustomHeaderProps> = ({ text, tooltip }) => {
+export const CustomHeader: FC<CustomHeaderProps> = ({
+	text,
+	tooltip,
+	link,
+}) => {
 	return (
 		<>
 			<Stack direction='row' spacing={1} alignItems='center'>
 				<h4>{text}</h4>
-				{tooltip && <CustomTooltip tooltip={tooltip} />}
+				<CustomTooltip tooltip={tooltip} link={link} />
 			</Stack>
 		</>
 	);

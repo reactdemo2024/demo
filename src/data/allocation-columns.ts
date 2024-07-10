@@ -83,7 +83,10 @@ export const autoscaleProfileColumns = [
         headerName: 'List of Autoscale Rules',
         renderHeader: {
             text: TooltipText.AUTOSCALE_RULES
-        }
+        },
+        multiSelect: {
+            reducer: 'autoscaleRules',
+        },
     },
     ...customPropertiesColumn
 ];
@@ -130,11 +133,13 @@ export const autoscaleRuleColumns = [
     {
         field: 'metric',
         headerName: 'Autoscale Metric',
-        // type: 'singleSelect',
-        // valueOptions: state.autoscaleMetrics.map(metric => ({ name: metric.name })),
-        renderHeader: {
-            text: TooltipText.AUTOSCALE_METRIC
-        }
+        type: 'singleSelect',
+        valueOptions: {
+            reducer: 'autoscaleMetrics',
+        },
+        // renderHeader: {
+        //     text: TooltipText.AUTOSCALE_METRIC
+        // }
     },
     ...customPropertiesColumn
 ];
