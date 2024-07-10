@@ -22,6 +22,7 @@ export enum LabelText {
 
 export enum Size {
     TOOLTIP_ICON = 12,
+    QUESTION_MARK_ICON_LARGE = 25,
     TOOLTIP_TEXT = 18,
     FONT_SMALL = 12,
     FONT_MEDIUM = 14,
@@ -39,4 +40,8 @@ export enum Color {
     YELLOW = '#FFBa01',
     GREY = '#747474',
     WHITE = '#FFFFFF',
+}
+
+export enum Url {
+    EAP_DOCUMENTATION = 'https://eng.ms/docs/products/autopilot/autopilot/eap/advanced-setup',
 }

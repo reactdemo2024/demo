@@ -1,7 +1,5 @@
-import {
-	Stack,
-} from '@mui/material';
-import { CustomDataGrid } from '../Common';
+import { Stack } from '@mui/material';
+import { CustomDataGrid, CustomTooltip } from '../Common';
 import {
 	autoscaleMetricColumns,
 	autoscaleProfileColumns,
@@ -14,11 +12,18 @@ import { putMachineGroups } from '../../store/allocation/machineGroupSlice';
 import { putAutoscaleProfiles } from '../../store/allocation/autoscaleProfileSlice';
 import { putAutoscaleRules } from '../../store/allocation/autoscaleRuleSlice';
 import { putAutoscaleMetrics } from '../../store/allocation/autoscaleMetricSlice';
+import { Size, Url } from '../../enum/common.enum';
 
 function AllocationConfiguration() {
 	return (
 		<>
-			<h2>Allocation Configuration</h2>
+			<Stack direction='row' spacing={1} sx={{ my: 3 }}>
+				<h2>Allocation Configuration</h2>
+				<CustomTooltip
+					link={Url.EAP_DOCUMENTATION}
+					size={Size.QUESTION_MARK_ICON_LARGE}
+				/>
+			</Stack>
 			<Stack direction='column' spacing={3}>
 				<MachineFunctionConfiguration />
 				<MachineGroupConfiguration />

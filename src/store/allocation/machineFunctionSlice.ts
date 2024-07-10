@@ -10,7 +10,7 @@ export interface MachineFunctionPayload {
     machineGroups: string;
     autoscaleProfiles: string;
     customProperties: string;
-  }
+}
   
 const machineFunctionSlice = createSlice({
     name: 'machineFunctions',

@@ -1,7 +1,4 @@
-import {
-	Stack,
-	Typography,
-} from '@mui/material';
+import { Stack } from '@mui/material';
 import {
 	putAvailabilityZone,
 	putAvailabilityZones,
@@ -14,11 +11,12 @@ import { putEncryptionAtHost } from '../../store/environment/encryptionHostSlice
 import { putCustomVMSSTags } from '../../store/environment/customVMSSTagSlice';
 import { putCustomVMSSExtensions } from '../../store/environment/customVMSSExtensionSlice';
 import { putTrustedLaunchMachineFunctions } from '../../store/environment/trustedLaunchMachineFunctionSlice';
-import { LabelText, TooltipText } from '../../enum/common.enum';
+import { LabelText, Size, TooltipText, Url } from '../../enum/common.enum';
 import {
 	CustomDataGrid,
 	CustomDataGridAndTextInputToggle,
 	CustomTextInput,
+	CustomTooltip,
 } from '../Common';
 import {
 	availabilityZoneColumns,
@@ -39,12 +37,16 @@ import { putDiskProfiles } from '../../store/environment/diskProfileSlice';
 function EnvironmentConfiguration() {
 	return (
 		<>
-			<Typography>
+			<Stack direction='row' spacing={1} sx={{ my: 3 }}>
 				<h2>Environment Configuration</h2>
-				<Stack direction='column' spacing={3}>
-					<AzureComputeManagerConfiguration />
-				</Stack>
-			</Typography>
+				<CustomTooltip
+					link={Url.EAP_DOCUMENTATION}
+					size={Size.QUESTION_MARK_ICON_LARGE}
+				/>
+			</Stack>
+			<Stack direction='column' spacing={3}>
+				<AzureComputeManagerConfiguration />
+			</Stack>
 		</>
 	);
 }
