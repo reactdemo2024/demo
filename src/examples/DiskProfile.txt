@@ -1,0 +1,23 @@
+[AzureComputeManager]
+DiskProfile_PIQRanking=PIQRanking
+DiskProfile_PIQQueryEngine=PIQRanking
+DiskProfile_PIQSelection=PIQSelection
+
+EAPVMSSPIQTagVmssModel.json=PIQRanking
+EAPVMSSPIQSelectionTagVmssModel.json=PIQSelection
+EAPVMSSPIQQueryEngineTagVmssModel.json=PIQQueryEngine
+
+AcceleratedNetworkingEnabledMachineFunctions=PIQRanking,PIQSelection,PIQQueryEngine
+AcceleratedNetworkingInPlaceUpdate=PIQRanking,PIQSelection,PIQQueryEngine
+
+[DiskProfile.PIQRanking]
+C=64
+D=256,StandardSSD_LRS,ReadWrite
+E=TemporaryStorage
+
+[DiskProfile.<profile name>]
+C=<Disk Size in GiB>, <Storage Account Type>
+<DriveLetter/LUN>=<Disk Size in GiB>, <Storage Account Type>, <Caching Type>, <IsPersistent>
+<Drive Letter/LUN>=TemporaryStorage
+
+Cluster:PHX01N,Environment:AADApplicationsRP-Prod-PHX01N

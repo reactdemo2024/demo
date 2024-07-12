@@ -1,0 +1,23 @@
+[ComputeDefinition]
+MachineFunctions=dualstack2,ipv4only, d4
+
+[MachineFunction_ipv4only]
+NumberOfMachines=1
+NumberOfScaleUnits=1
+Sku=Standard_D2_v3
+AllocationType=AzureVM
+EapV2=true
+
+[MachineFunction_dualstack2]
+NumberOfMachines=1
+NumberOfScaleUnits=1
+Sku=Standard_D2_v3
+AllocationType=AzureVM
+EapV2=true
+
+[MachineFunction_d4]
+NumberOfMachines=1
+NumberOfScaleUnits=1
+Sku=Standard_D2_v4
+AllocationType=AzureVM
+EapV2=true

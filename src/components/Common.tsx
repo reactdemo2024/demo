@@ -6,6 +6,7 @@ import {
 	GridRenderCellParams,
 	GridRowId,
 	GridRowsProp,
+	useGridApiContext,
 } from '@mui/x-data-grid';
 import { FC, useEffect, useState } from 'react';
 import {
@@ -15,6 +16,8 @@ import {
 	Chip,
 	FormControlLabel,
 	IconButton,
+	MenuItem,
+	Select,
 	Stack,
 	TextField,
 	Tooltip,
@@ -182,43 +185,79 @@ const useValueOptions = (reducer: string) => {
 	return optionsList;
 };
 
+// const CustomDiscountEditCell = (params: any) => (
+// 	<CustomEditComponent {...params} />
+// );
+
+// function CustomEditComponent(props: any) {
+// 	const { id, value, field } = props;
+// 	const apiRef = useGridApiContext();
+
+// 	const handleChange = (event: any) => {
+// 		const eventValue = event.target.value; // The new value entered by the user
+// 		console.log({ eventValue });
+// 		const newValue =
+// 			typeof eventValue === 'string' ? value.split(',') : eventValue;
+// 		apiRef.current.setEditCellValue({
+// 			id,
+// 			field,
+// 			value: newValue.filter((x: any) => x !== ''),
+// 		});
+// 	};
+
+// 	return (
+// 		<Select
+// 			labelId='demo-multiple-name-label'
+// 			id='demo-multiple-name'
+// 			multiple
+// 			value={value}
+// 			onChange={handleChange}
+// 			sx={{ width: '100%' }}
+// 		>
+// 			{discountOptions.map((option) => (
+// 				<MenuItem key={option} value={option}>
+// 					{option}
+// 				</MenuItem>
+// 			))}
+// 		</Select>
+// 	);
+// }
+
+// const discountOptions = ['EU-resident', 'junior'];
+
+// function CustomFilterInputSingleSelect(props: any) {
+// 	const { item, applyValue, type, apiRef, focusElementRef, ...others } = props;
+
+// 	return (
+// 		<TextField
+// 			id={`contains-input-${item.id}`}
+// 			value={item.value}
+// 			onChange={(event) => applyValue({ ...item, value: event.target.value })}
+// 			type={type || 'text'}
+// 			variant='standard'
+// 			InputLabelProps={{
+// 				shrink: true,
+// 			}}
+// 			inputRef={focusElementRef}
+// 			select
+// 			SelectProps={{
+// 				native: true,
+// 			}}
+// 		>
+// 			{['', ...discountOptions].map((option) => (
+// 				<option key={option} value={option}>
+// 					{option}
+// 				</option>
+// 			))}
+// 		</TextField>
+// 	);
+// }
+
 export function createDataGridColumns(
 	columnTemplate: any[],
 	handleDeleteRow: any
 ) {
 	const columns = [
-		// {
-		// 	field: 'multiSelect',
-		// 	headerName: 'Multi Select',
-		// 	flex: 1,
-		// 	minWidth: 400,
-		// 	editable: true,
-		// 	disableColumnMenu: true,
-		// 	renderCell: (params: any) => {
-		// 		return (
-		// 			<Autocomplete
-		// 				multiple
-		// 				id='tags-outlined'
-		// 				options={['1', '2']} // Replace 'yourReducer' with your actual reducer
-		// 				getOptionLabel={(option) => option}
-		// 				defaultValue={[]}
-		// 				filterSelectedOptions
-		// 				renderTags={(value, getTagProps) =>
-		// 					value.map((option, index) => (
-		// 						<Chip
-		// 							variant='outlined'
-		// 							label={option}
-		// 							{...getTagProps({ index })}
-		// 						/>
-		// 					))
-		// 				}
-		// 				renderInput={(params) => (
-		// 					<TextField {...params} variant='outlined' />
-		// 				)}
-		// 			/>
-		// 		);
-		// 	},
-		// },
 		...columnTemplate.map((col) => {
 			const baseMinWidth = 150;
 			const minWidth = Math.max(
@@ -236,13 +275,12 @@ export function createDataGridColumns(
 				minWidth: col.width || minWidth,
 				editable: true,
 				disableColumnMenu: true,
-				valueOptions:
-					!col.multiSelect &&
-					(col?.valueOptions
-						? col?.valueOptions?.reducer
-							? ['', ...useValueOptions(col.valueOptions.reducer)]
-							: ['', ...Object.values(col.valueOptions)]
-						: []),
+				valueOptions: col?.valueOptions
+					? col?.valueOptions?.reducer
+						? ['', ...useValueOptions(col.valueOptions.reducer)]
+						: ['', ...Object.values(col.valueOptions)]
+					: [],
+				// valueOptions: discountOptions,
 				renderHeader:
 					col.renderHeader &&
 					((params) => (
@@ -252,14 +290,39 @@ export function createDataGridColumns(
 							link={col.renderHeader!.link}
 						/>
 					)),
+				// ...(isMultiSelect
+				// 	? {
+							// valueFormatter: (value: any) => {
+							// 	if (value) console.log('value', value);
+							// 	return (value ? value.join('/') : '');
+							// },
+							// renderEditCell: CustomDiscountEditCell,
+							// filterOperators: [
+							// 	{
+							// 		value: 'contains',
+							// 		getApplyFilterFn: (filterItem) => {
+							// 			if (filterItem.value == null || filterItem.value === '') {
+							// 				return null;
+							// 			}
+							// 			return ({ value }) => {
+							// 				// if one of the cell values corresponds to the filter item
+							// 				return value.some(
+							// 					(cellValue: any) => cellValue === filterItem.value
+							// 				);
+							// 			};
+							// 		},
+							// 		InputComponent: CustomFilterInputSingleSelect,
+							// 	},
+							// ],
+					//   }
+					// : {}),
 				// renderCell:
-				// 	col.multiSelect &&
-				// 	col.multiSelect?.reducer &&
+				// 	multiSelectOptions &&
 				// 	((params) => {
 				// 		return (
 				// 			<Autocomplete
 				// 				multiple
-				// 				options={['', ...useValueOptions(col.multiSelect.reducer)]}
+				// 				options={multiSelectOptions}
 				// 				getOptionLabel={(option) => option}
 				// 				defaultValue={[]}
 				// 				filterSelectedOptions

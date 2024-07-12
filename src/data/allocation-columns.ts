@@ -81,12 +81,13 @@ export const autoscaleProfileColumns = [
     {
         field: 'autoscaleRules',
         headerName: 'List of Autoscale Rules',
+        // type: 'multiSelect',
         renderHeader: {
             text: TooltipText.AUTOSCALE_RULES
         },
-        multiSelect: {
-            reducer: 'autoscaleRules',
-        },
+        // valueOptions: {
+        //     reducer: 'autoscaleRules',
+        // },
     },
     ...customPropertiesColumn
 ];

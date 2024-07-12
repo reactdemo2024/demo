@@ -1,0 +1,13 @@
+[OutboundRule.obRule1]
+AllocatedOutboundPorts=1024
+IdleTimeoutInMinutes=10
+EnableTcpReset=true
+Protocol=Tcp
+
+[AzureSLB.CRM-InternetOutbound-VIP]
+EAPV2=True
+MachineFunction=CRM
+OutboundRules=obRule1
+Scope=Internet
+SKU=Standard
+NumberOfIPs=1
