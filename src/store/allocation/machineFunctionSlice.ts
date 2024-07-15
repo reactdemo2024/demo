@@ -7,8 +7,8 @@ export interface MachineFunctionPayload {
     numberOfScaleUnits: number;
     sku: string;
     enableAutoScale: boolean;
-    machineGroups: string;
-    autoscaleProfiles: string;
+    machineGroups: string[];
+    autoscaleProfiles: string[];
     customProperties: string;
 }
   

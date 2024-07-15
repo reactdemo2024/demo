@@ -27,15 +27,23 @@ export const machineFunctionColumns = [
     {
         field: 'machineGroups',
         headerName: 'List of Machine Groups',
+        type: 'multiSelect',
+        valueOptions: {
+            reducer: 'machineGroups',
+        },
         renderHeader: {
-            text: TooltipText.MACHINE_GROUPS
-        }
+            text: TooltipText.MULTI_SELECT_OPTIONS
+        },
     },
     {
         field: 'autoscaleProfiles',
         headerName: 'List of Autoscale Profiles',
+        type: 'multiSelect',
+        valueOptions: {
+            reducer: 'autoscaleProfiles',
+        },
         renderHeader: {
-            text: TooltipText.AUTOSCALE_PROFILES
+            text: TooltipText.MULTI_SELECT_OPTIONS
         }
     },
     ...customPropertiesColumn
@@ -82,11 +90,11 @@ export const autoscaleProfileColumns = [
         field: 'autoscaleRules',
         headerName: 'List of Autoscale Rules',
         type: 'multiSelect',
-        renderHeader: {
-            text: TooltipText.AUTOSCALE_RULES
-        },
         valueOptions: {
             reducer: 'autoscaleRules',
+        },
+        renderHeader: {
+            text: TooltipText.MULTI_SELECT_OPTIONS
         },
     },
     ...customPropertiesColumn
@@ -138,9 +146,9 @@ export const autoscaleRuleColumns = [
         valueOptions: {
             reducer: 'autoscaleMetrics',
         },
-        // renderHeader: {
-        //     text: TooltipText.AUTOSCALE_METRIC
-        // }
+        renderHeader: {
+            text: TooltipText.SINGLE_SELECT_OPTION
+        }
     },
     ...customPropertiesColumn
 ];

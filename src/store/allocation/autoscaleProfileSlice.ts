@@ -6,7 +6,7 @@ export interface AutoscaleProfilePayload {
     minMachineCount: number;
     defaultMachineCount: number;
     maxMachineCount: number;
-    autoscaleRules: string;
+    autoscaleRules: string[];
     customProperties: string;
   }
   

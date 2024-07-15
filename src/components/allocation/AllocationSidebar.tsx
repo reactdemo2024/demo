@@ -263,7 +263,7 @@ function AllocationSidebar() {
 						>
 							{mf.machineGroups &&
 								mf.machineGroups.length > 0 &&
-								mf.machineGroups.split(',').map((mg, mgIndex) => (
+								mf.machineGroups.map((mg, mgIndex) => (
 									<CustomTreeItem
 										itemId={`machine-group-${index}-${mgIndex}`}
 										label={
@@ -282,7 +282,7 @@ function AllocationSidebar() {
 								))}
 							{mf.autoscaleProfiles &&
 								mf.autoscaleProfiles.length > 0 &&
-								mf.autoscaleProfiles.split(',').map((asp, aspIndex) => (
+								mf.autoscaleProfiles.map((asp, aspIndex) => (
 									<CustomTreeItem
 										itemId={`autoscale-profile-${index}-${aspIndex}`}
 										label={
@@ -304,9 +304,8 @@ function AllocationSidebar() {
 												autoscaleProfile.autoscaleRules &&
 												autoscaleProfile.autoscaleRules.length > 0
 											) {
-												return autoscaleProfile.autoscaleRules
-													.split(',')
-													.map((asr, asrIndex) => (
+												return autoscaleProfile.autoscaleRules.map(
+													(asr, asrIndex) => (
 														<CustomTreeItem
 															itemId={`${index}-${apIndex}-${asrIndex}`}
 															label={
@@ -322,7 +321,8 @@ function AllocationSidebar() {
 																</Typography>
 															}
 														/>
-													));
+													)
+												);
 											}
 											return null;
 										})}

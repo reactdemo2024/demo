@@ -6,16 +6,12 @@ import {
 	GridRenderCellParams,
 	GridRowId,
 	GridRowsProp,
-	renderEditInputCell,
-	renderEditSingleSelectCell,
 	useGridApiContext,
 } from '@mui/x-data-grid';
 import { FC, useEffect, useState } from 'react';
 import {
-	Autocomplete,
 	Button,
 	Checkbox,
-	Chip,
 	FormControlLabel,
 	IconButton,
 	MenuItem,
@@ -183,7 +179,7 @@ export const CustomRenderHeaderWithTooltip: FC<
 
 const useValueOptions = (reducer: string) => {
 	const valueOptions: any[] = useSelector((state: any) => state[reducer]);
-	const optionsList = valueOptions.map((value) => value.name);
+	const optionsList = valueOptions?.map((value) => value.name) || [];
 	return optionsList;
 };
 
@@ -200,7 +196,11 @@ export function createDataGridColumns(
 					? col.headerName.length * 10 + 50
 					: col.headerName.length * 10
 			);
-			const isMultiSelect = col?.type === 'multiSelect';
+
+			const isMultiSelect =
+				col?.type === 'multiSelect' &&
+				col?.valueOptions &&
+				col?.valueOptions?.reducer;
 			const colType = (
 				col?.type === isMultiSelect ? 'singleSelect' : col?.type
 			) as GridColType;
@@ -231,7 +231,8 @@ export function createDataGridColumns(
 				...(isMultiSelect
 					? {
 							valueFormatter: (value: any) => (value ? value?.join(',') : ''),
-							renderEditCell: CustomDiscountEditCell,
+							renderEditCell: (params) =>
+								CustomDiscountEditCell(params, col.valueOptions.reducer),
 							filterOperators: [
 								{
 									value: 'contains',
@@ -251,31 +252,6 @@ export function createDataGridColumns(
 							],
 					  }
 					: {}),
-				// renderCell:
-				// 	multiSelectOptions &&
-				// 	((params) => {
-				// 		return (
-				// 			<Autocomplete
-				// 				multiple
-				// 				options={multiSelectOptions}
-				// 				getOptionLabel={(option) => option}
-				// 				defaultValue={[]}
-				// 				filterSelectedOptions
-				// 				renderTags={(value, getTagProps) =>
-				// 					value.map((option, index) => (
-				// 						<Chip
-				// 							variant='outlined'
-				// 							label={option}
-				// 							{...getTagProps({ index })}
-				// 						/>
-				// 					))
-				// 				}
-				// 				renderInput={(params) => (
-				// 					<TextField {...params} variant='outlined' />
-				// 				)}
-				// 			/>
-				// 		);
-				// 	}),
 			} as GridColDef;
 		}),
 		{
@@ -356,38 +332,7 @@ export const CustomDataGrid: FC<CustomDataGridProps> = ({
 		console.error('Row update error:', error);
 	};
 
-	let columns = createDataGridColumns(columnList, handleDeleteRow);
-
-	// testing multiselect
-	const multiSelectColumn = {
-		field: 'discount',
-		type: 'singleSelect',
-		minWidth: 120,
-		flex: 1,
-		editable: true,
-		valueOptions: discountOptions,
-		valueFormatter: (value: any) => (value ? value?.join(',') : ''),
-		renderEditCell: CustomDiscountEditCell,
-		filterOperators: [
-			{
-				value: 'contains',
-				getApplyFilterFn: (filterItem: any) => {
-					if (filterItem.value == null || filterItem.value === '') {
-						return null;
-					}
-					return (value: any) => {
-						// if one of the cell values corresponds to the filter item
-						return value.some(
-							(cellValue: any) => cellValue === filterItem.value
-						);
-					};
-				},
-				InputComponent: CustomFilterInputSingleSelect,
-			},
-		],
-	};
-
-	// columns.push(multiSelectColumn as GridColDef);
+	const columns = createDataGridColumns(columnList, handleDeleteRow);
 
 	return (
 		<>
@@ -413,16 +358,18 @@ export const CustomDataGrid: FC<CustomDataGridProps> = ({
 	);
 };
 
-const discountOptions = ['test1', 'test2', 'test3'];
+const CustomDiscountEditCell = (params: any, reducer: string) => (
+	<CustomEditComponent {...params} reducer={reducer} />
+);
 
 function CustomEditComponent(props: any) {
-	const { id, value, field } = props;
+	const { id, value, field, reducer } = props;
 	const apiRef = useGridApiContext();
+	const valueOptions = [...useValueOptions(reducer)];
 
 	const handleChange = (event: any) => {
-		const eventValue = event.target.value; // The new value entered by the user
+		const eventValue = event.target.value;
 		console.log({ eventValue });
-		// Ensure newValue is always an array
 		const newValue = Array.isArray(eventValue)
 			? eventValue
 			: eventValue.split(',');
@@ -433,7 +380,6 @@ function CustomEditComponent(props: any) {
 		});
 	};
 
-	// Ensure value is an array when passed to the Select component
 	const selectValue = value
 		? Array.isArray(value)
 			? value
@@ -447,7 +393,7 @@ function CustomEditComponent(props: any) {
 			onChange={handleChange}
 			sx={{ width: '100%' }}
 		>
-			{discountOptions.map((option) => (
+			{valueOptions.map((option) => (
 				<MenuItem key={option} value={option}>
 					{option}
 				</MenuItem>
@@ -456,13 +402,11 @@ function CustomEditComponent(props: any) {
 	);
 }
 
-// testing multiselect
-const CustomDiscountEditCell = (params: any) => (
-	<CustomEditComponent {...params} />
-);
-
 function CustomFilterInputSingleSelect(props: any) {
 	const { item, applyValue, type, apiRef, focusElementRef, ...others } = props;
+
+	const reducer = 'autoscaleRules';
+	const valueOptions = [...useValueOptions(reducer)];
 
 	return (
 		<TextField
@@ -480,7 +424,7 @@ function CustomFilterInputSingleSelect(props: any) {
 				native: true,
 			}}
 		>
-			{['', ...discountOptions].map((option) => (
+			{valueOptions.map((option) => (
 				<option key={option} value={option}>
 					{option}
 				</option>

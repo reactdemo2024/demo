@@ -2,6 +2,8 @@ export enum TooltipText {
     TIME_IN_MINUTES = 'Enter time in minutes, i.e. 5',
     CUSTOM_PROPERTIES = 'Enter custom properties in key-value format separated by commas, i.e. PropertyName1=Value1,PropertyName2=Value2',
     COMMA_SEPARATED = 'Enter each name separated by commas, i.e. Foo1,Foo2,Foo3',
+    MULTI_SELECT_OPTIONS = 'Select one or more options, create new options by adding to the corresponding table',
+    SINGLE_SELECT_OPTION = 'Select one option, create new options by adding to the corresponding table',
     JSON_EXTENSION = 'Include .json extension in the field, i.e. filename.json',
     JSON_FORMAT = 'Use json string format, i.e. { "workspaceId" : "abcdefg-hijklmn-1234-opqrs5-67890tuv" }',
     SUBSCRIPTION_OPTIONS = `There are 4 options for subscription configuration and will be formatted based on the filled inputs.
@@ -13,7 +15,6 @@ export enum TooltipText {
     MACHINE_GROUPS = 'Enter name of machine group(s) separated by commas, i.e. Group1,Group2',
     AUTOSCALE_PROFILES = 'Enter name of autoscale profile(s) separated by commas, i.e. Profile1,Profile2',
     AUTOSCALE_RULES = 'Enter name of autoscale rule(s) separated by commas, i.e. Rule1,Rule2',
-    AUTOSCALE_METRIC = 'Enter name of autoscale metric created, i.e. Metric1',
 }
 
 export enum LabelText {
