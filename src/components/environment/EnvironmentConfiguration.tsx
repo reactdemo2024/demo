@@ -27,7 +27,7 @@ import {
 	subscriptionColumns,
 	zoneBalanceColumns,
 	diskProfileColumns,
-} from '../../data/environment-columns';
+} from '../../inputs/environment-columns';
 import { putAcceleratedNetworkingEnabledMachineFunctions } from '../../store/environment/acceleratedNetworkingEnabledMachineFunctionSlice';
 import { putAcceleratedNetworkingInPlaceUpdate } from '../../store/environment/acceleratedNetworkingInPlaceUpdateSlice';
 import { putOutboundRules } from '../../store/environment/outboundRuleSlice';

@@ -155,9 +155,13 @@ export const azureSLBColumns = [
     {
         field: 'outboundRules',
         headerName: 'List of Outbound Rule(s)',
+        type: 'multiSelect',
+        valueOptions: {
+            reducer: 'outboundRules',
+        },
         renderHeader: {
-            text: TooltipText.COMMA_SEPARATED
-        }
+            text: TooltipText.MULTI_SELECT_OPTIONS
+        },
     },
 ];
 

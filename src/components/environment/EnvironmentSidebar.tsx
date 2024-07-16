@@ -18,6 +18,7 @@ import { Font, Size } from '../../enum/common.enum';
 import { useDispatch } from 'react-redux';
 import { putEnvironmentPreview } from '../../store/environment/environmentPreviewSlice';
 
+// generate environment.ini file
 const generateEnvironmentIni = () => {
 	const state = store.getState();
 	const availabilityZones = state.availabilityZones;

@@ -6,7 +6,7 @@ import {
 	autoscaleRuleColumns,
 	machineFunctionColumns,
 	machineGroupColumns,
-} from '../../data/allocation-columns';
+} from '../../inputs/allocation-columns';
 import { putMachineFunctions } from '../../store/allocation/machineFunctionSlice';
 import { putMachineGroups } from '../../store/allocation/machineGroupSlice';
 import { putAutoscaleProfiles } from '../../store/allocation/autoscaleProfileSlice';

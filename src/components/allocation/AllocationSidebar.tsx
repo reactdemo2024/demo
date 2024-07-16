@@ -31,6 +31,7 @@ const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
 	},
 }));
 
+// generate allocation.ini file
 const generateAllocationIni = () => {
 	const state = store.getState();
 	const machineFunctions = state.machineFunctions;
