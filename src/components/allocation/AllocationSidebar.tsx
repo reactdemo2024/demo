@@ -13,7 +13,10 @@ import {
 	Typography,
 	styled,
 } from '@mui/material';
-import { FileCopy, FileDownload } from '@mui/icons-material';
+import {
+	FileCopy,
+	FileDownload,
+} from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import store from '../../store/store';
 import { AllocationType, EapV2 } from '../../enum/allocation.enum';
@@ -23,6 +26,8 @@ import { AutoscaleMetricPayload } from '../../store/allocation/autoscaleMetricSl
 import { Color, Font, Size } from '../../enum/common.enum';
 import { MachineGroupPayload } from '../../store/allocation/machineGroupSlice';
 import { putAllocationPreview } from '../../store/allocation/allocationPreviewSlice';
+
+// upload allocation.ini file
 
 const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
 	'& .MuiTreeItem-content': {
@@ -41,7 +46,6 @@ const generateAllocationIni = () => {
 	const autoscaleMetrics = state.autoscaleMetrics;
 
 	let result = '[ComputeDefinition]\n';
-
 	if (machineFunctions.length > 0) {
 		result += `MachineFunctions=${machineFunctions
 			.map((mf) => mf.name)
@@ -241,7 +245,7 @@ function AllocationSidebar() {
 				sx={{
 					position: 'fixed',
 					width: '260px',
-					maxHeight: 'calc(100vh - 150px)', // Set a fixed maximum height
+					maxHeight: 'calc(100vh - 150px)',
 					overflowY: 'auto',
 				}}
 			>

@@ -15,6 +15,8 @@ export enum TooltipText {
     MACHINE_GROUPS = 'Enter name of machine group(s) separated by commas, i.e. Group1,Group2',
     AUTOSCALE_PROFILES = 'Enter name of autoscale profile(s) separated by commas, i.e. Profile1,Profile2',
     AUTOSCALE_RULES = 'Enter name of autoscale rule(s) separated by commas, i.e. Rule1,Rule2',
+    UPLOAD_FILE = 'Upload an existing .ini configuration file to edit',
+    UPLOAD_FILE_INI = 'Please select a .ini file',
 }
 
 export enum LabelText {
