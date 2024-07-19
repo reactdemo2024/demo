@@ -327,7 +327,7 @@ function EnvironmentSidebar() {
 				sx={{
 					position: 'fixed',
 					width: '260px',
-					maxHeight: 'calc(100vh - 150px)', // Set a fixed maximum height
+					maxHeight: 'calc(100vh - 160px)',
 					overflowY: 'auto',
 					mt: 1,
 				}}

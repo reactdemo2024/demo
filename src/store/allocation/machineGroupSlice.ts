@@ -3,8 +3,8 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 export interface MachineGroupPayload {
     id: string;
     name: string;
-    numberOfMachines: number;
-    numberOfScaleUnits: number;
+    numberOfMachines: string;
+    numberOfScaleUnits: string;
     sku: string;
     customProperties: string;
   }

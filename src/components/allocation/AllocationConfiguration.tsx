@@ -7,16 +7,40 @@ import {
 	machineFunctionColumns,
 	machineGroupColumns,
 } from '../../inputs/allocation-columns';
-import { MachineFunctionPayload, putMachineFunctions } from '../../store/allocation/machineFunctionSlice';
-import { putMachineGroups } from '../../store/allocation/machineGroupSlice';
-import { putAutoscaleProfiles } from '../../store/allocation/autoscaleProfileSlice';
-import { putAutoscaleRules } from '../../store/allocation/autoscaleRuleSlice';
-import { putAutoscaleMetrics } from '../../store/allocation/autoscaleMetricSlice';
+import {
+	MachineFunctionPayload,
+	putMachineFunctions,
+} from '../../store/allocation/machineFunctionSlice';
+import {
+	MachineGroupPayload,
+	putMachineGroups,
+} from '../../store/allocation/machineGroupSlice';
+import {
+	AutoscaleProfilePayload,
+	putAutoscaleProfiles,
+} from '../../store/allocation/autoscaleProfileSlice';
+import {
+	AutoscaleRulePayload,
+	putAutoscaleRules,
+} from '../../store/allocation/autoscaleRuleSlice';
+import {
+	AutoscaleMetricPayload,
+	putAutoscaleMetrics,
+} from '../../store/allocation/autoscaleMetricSlice';
 import { Size, TooltipText, Url } from '../../enum/common.enum';
 import { UploadFileOutlined } from '@mui/icons-material';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import {
+	autoscaleMetricPropertyHandler,
+	autoscaleProfilePropertyHandler,
+	autoscaleRulePropertyHandler,
+	machineFunctionPropertyHandler,
+	machineGroupPropertyHandler,
+} from '../../handlers/allocation-handlers';
 
 function AllocationConfiguration() {
+	const dispatch = useDispatch();
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 	const handleUploadClick = () => {
@@ -29,7 +53,6 @@ function AllocationConfiguration() {
 			const reader = new FileReader();
 			reader.onload = (e) => {
 				const text = e.target!.result as string;
-				// regex splits the .ini file into array for each line, not including empty lines
 				const parsedSections = parseIniText(text);
 				handleAllocationDispatch(parsedSections);
 			};
@@ -43,71 +66,124 @@ function AllocationConfiguration() {
 	};
 
 	function parseIniText(text: string): Array<Array<string>> {
-	  const lines = text.match(/[^\r\n]+/g) || []; // Split text into lines, excluding empty lines
-	  const result: Array<Array<string>> = [];
-	  let currentSection: Array<string> = [];
-	
-	  lines.forEach(line => {
-		if (line.startsWith('[')) { // Check if the line is a section header
-		  if (currentSection.length > 0) {
-			// If there's an existing section, push it to the result before starting a new one
+		const lines = text.match(/[^\r\n]+/g) || []; // Split text into lines, excluding empty lines
+		const result: Array<Array<string>> = [];
+		let currentSection: Array<string> = [];
+
+		lines.forEach((line) => {
+			if (line.startsWith('[')) {
+				// Check if the line is a section header
+				if (currentSection.length > 0) {
+					// If there's an existing section, push it to the result before starting a new one
+					result.push(currentSection);
+				}
+				// Start a new section with the current line as the first element
+				currentSection = [line];
+			} else if (line.trim() !== '') {
+				// Add non-empty lines to the current section
+				currentSection.push(line);
+			}
+		});
+		// After the loop, add the last section if it's not empty
+		if (currentSection.length > 0) {
 			result.push(currentSection);
-		  }
-		  // Start a new section with the current line as the first element
-		  currentSection = [line];
-		} else if (line.trim() !== '') { // Add non-empty lines to the current section
-		  currentSection.push(line);
 		}
-	  });
-	
-	  // After the loop, add the last section if it's not empty
-	  if (currentSection.length > 0) {
-		result.push(currentSection);
-	  }
-	
-	  return result;
+
+		return result;
 	}
-	
-	const handleAllocationDispatch = (lines: string[][]) => {
-		console.log(lines);
-	//   const machineFunctionPayloads: MachineFunctionPayload[] = [];
-	//   let currentPayload: Partial<MachineFunctionPayload> | null = null;
-	
-	//   // Define a mapping of keys to their handlers
-	//   const propertyHandlers: { [key: string]: (value: string, payload: Partial<MachineFunctionPayload>) => void } = {
-	// 	NumberOfMachines: (value, payload) => payload.numberOfMachines = parseInt(value, 10),
-	// 	NumberOfScaleUnits: (value, payload) => payload.numberOfScaleUnits = parseInt(value, 10),
-	// 	Sku: (value, payload) => payload.sku = value,
-	// 	EnableAutoScale: (value, payload) => payload.enableAutoScale = value.toLowerCase() === 'true',
-	// 	MachineGroups: (value, payload) => payload.machineGroups = value.split(','),
-	// 	// Add more handlers as needed
-	//   };
-	
-	//   lines.forEach((line, index) => {
-	// 	if (line.startsWith('[MachineFunction_')) {
-	// 	  if (currentPayload) {
-	// 		// Push the previous payload to the array
-	// 		machineFunctionPayloads.push(currentPayload as MachineFunctionPayload);
-	// 	  }
-	// 	  const match = line.match(/\[MachineFunction_(.+?)\]/);
-	// 	  const machineFunctionName = match ? match[1] : '';
-	// 	  currentPayload = { id: (machineFunctionPayloads.length + 1).toString(), name: machineFunctionName };
-	// 	} else if (currentPayload) {
-	// 	  const [key, value] = line.split('=');
-	// 	  const handler = propertyHandlers[key];
-	// 	  if (handler) {
-	// 		handler(value, currentPayload);
-	// 	  }
-	// 	}
-	// 	// If it's the last line, push the current payload
-	// 	if (index === lines.length - 1 && currentPayload) {
-	// 	  machineFunctionPayloads.push(currentPayload as MachineFunctionPayload);
-	// 	}
-	//   });
-	
-	  // Now, machineFunctionPayloads array will have all the parsed payloads
-	  // You can input them into Redux or handle them as needed
-	}
+
+	const parseSectionProperty = (
+		section: string[],
+		id: number,
+		title: string,
+		propertyHandler: any,
+		payload: any[]
+	) => {
+		const match = section[0].match(new RegExp(`\\[${title}(.+?)\\]`));
+		const name = match ? match[1] : '';
+		let currentPayload = {
+			id: id.toString(),
+			name: name,
+		};
+		section.forEach((line) => {
+			if (line.startsWith('[')) {
+				return;
+			}
+			const [key, value] = line.split('=');
+			const handler = propertyHandler[key];
+			if (handler) {
+				handler(value, currentPayload);
+			}
+		});
+		payload.push(currentPayload);
+	};
+
+	const handleAllocationDispatch = (sections: string[][]) => {
+		let machineFunctionPayload: MachineFunctionPayload[] = [];
+		let machineGroupPayload: MachineGroupPayload[] = [];
+		let autoscaleProfilePayload: AutoscaleProfilePayload[] = [];
+		let autoscaleRulePayload: AutoscaleRulePayload[] = [];
+		let autoscaleMetricPayload: AutoscaleMetricPayload[] = [];
+
+		sections.forEach((section) => {
+			// [MachineFunction_Foo]
+			if (section[0].startsWith('[MachineFunction_')) {
+				parseSectionProperty(
+					section,
+					machineFunctionPayload.length,
+					'MachineFunction_',
+					machineFunctionPropertyHandler,
+					machineFunctionPayload
+				);
+			}
+			// [MachineGroup_Foo]
+			if (section[0].startsWith('[MachineGroup_')) {
+				parseSectionProperty(
+					section,
+					machineGroupPayload.length,
+					'MachineGroup_',
+					machineGroupPropertyHandler,
+					machineGroupPayload
+				);
+			}
+			// [AutoscaleProfile_Foo]
+			if (section[0].startsWith('[AutoscaleProfile_')) {
+				parseSectionProperty(
+					section,
+					autoscaleProfilePayload.length,
+					'AutoscaleProfile_',
+					autoscaleProfilePropertyHandler,
+					autoscaleProfilePayload
+				);
+			}
+			// [AutoscaleRule_Foo]
+			if (section[0].startsWith('[AutoscaleRule_')) {
+				parseSectionProperty(
+					section,
+					autoscaleRulePayload.length,
+					'AutoscaleRule_',
+					autoscaleRulePropertyHandler,
+					autoscaleRulePayload
+				);
+			}
+			// [AutoscaleMetric_Foo]
+			if (section[0].startsWith('[AutoscaleMetric_')) {
+				parseSectionProperty(
+					section,
+					autoscaleMetricPayload.length,
+					'AutoscaleMetric_',
+					autoscaleMetricPropertyHandler,
+					autoscaleMetricPayload
+				);
+			}
+		});
+
+		dispatch(putMachineFunctions(machineFunctionPayload));
+		dispatch(putMachineGroups(machineGroupPayload));
+		dispatch(putAutoscaleProfiles(autoscaleProfilePayload));
+		dispatch(putAutoscaleRules(autoscaleRulePayload));
+		dispatch(putAutoscaleMetrics(autoscaleMetricPayload));
+	};
 
 	return (
 		<>

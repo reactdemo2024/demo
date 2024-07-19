@@ -26,6 +26,7 @@ import { AutoscaleMetricPayload } from '../../store/allocation/autoscaleMetricSl
 import { Color, Font, Size } from '../../enum/common.enum';
 import { MachineGroupPayload } from '../../store/allocation/machineGroupSlice';
 import { putAllocationPreview } from '../../store/allocation/allocationPreviewSlice';
+import { AutoscaleRulePayload } from '../../store/allocation/autoscaleRuleSlice';
 
 // upload allocation.ini file
 
@@ -113,8 +114,8 @@ const generateAllocationIni = () => {
 		Object.keys(ar).forEach((key) => {
 			if (key !== 'name' && key !== 'id' && key !== 'customProperties') {
 				const formatKey = key.charAt(0).toUpperCase() + key.slice(1);
-				result += ar[key as keyof AutoscaleProfilePayload]
-					? `${formatKey}=${ar[key as keyof AutoscaleProfilePayload]}\n`
+				result += ar[key as keyof AutoscaleRulePayload]
+					? `${formatKey}=${ar[key as keyof AutoscaleRulePayload]}\n`
 					: '';
 			}
 		});
@@ -245,7 +246,7 @@ function AllocationSidebar() {
 				sx={{
 					position: 'fixed',
 					width: '260px',
-					maxHeight: 'calc(100vh - 150px)',
+					maxHeight: 'calc(100vh - 160px)',
 					overflowY: 'auto',
 				}}
 			>
