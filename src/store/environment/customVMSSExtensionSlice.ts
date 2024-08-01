@@ -3,15 +3,15 @@ import { OsType } from "../../enum/environment.enum";
 
 export interface CustomVMSSExtensionPayload {
     id: number;
-    name?: string;
-    type?: string;
-    publisher?: string;
-    typeHandlerVersion?: string;
-    autoUpgradeMinorVersion?: boolean;
-    forceUpdateTag?: string;
-    settings?: string;
-    osType?: OsType;
-    machineFunction?: string;
+    name: string;
+    type: string;
+    publisher: string;
+    typeHandlerVersion: string;
+    autoUpgradeMinorVersion: boolean;
+    forceUpdateTag: string;
+    settings: string;
+    osType: OsType | null;
+    machineFunction: string;
 }
 
 const customVMSSExtensionSlice = createSlice({

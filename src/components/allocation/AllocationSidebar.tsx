@@ -27,15 +27,7 @@ import { Color, Font, Size } from '../../enum/common.enum';
 import { MachineGroupPayload } from '../../store/allocation/machineGroupSlice';
 import { putAllocationPreview } from '../../store/allocation/allocationPreviewSlice';
 import { AutoscaleRulePayload } from '../../store/allocation/autoscaleRuleSlice';
-
-// upload allocation.ini file
-
-const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
-	'& .MuiTreeItem-content': {
-		padding: '1px 0px',
-		gap: '2px',
-	},
-}));
+import { CustomTreeItem } from '../Common';
 
 // generate allocation.ini file
 const generateAllocationIni = () => {
@@ -254,6 +246,7 @@ function AllocationSidebar() {
 					{machineFunctions?.map((mf, index) => (
 						<CustomTreeItem
 							itemId={`machine-function-${index}`}
+							key={`machine-function-${index}`}
 							label={
 								<Typography
 									variant='subtitle1'
@@ -272,6 +265,7 @@ function AllocationSidebar() {
 								mf.machineGroups.map((mg, mgIndex) => (
 									<CustomTreeItem
 										itemId={`machine-group-${index}-${mgIndex}`}
+										key={`machine-group-${index}-${mgIndex}`}
 										label={
 											<Typography
 												variant='subtitle1'
@@ -291,6 +285,7 @@ function AllocationSidebar() {
 								mf.autoscaleProfiles.map((asp, aspIndex) => (
 									<CustomTreeItem
 										itemId={`autoscale-profile-${index}-${aspIndex}`}
+										key={`autoscale-profile-${index}-${aspIndex}`}
 										label={
 											<Typography
 												variant='subtitle1'
@@ -314,6 +309,7 @@ function AllocationSidebar() {
 													(asr, asrIndex) => (
 														<CustomTreeItem
 															itemId={`${index}-${apIndex}-${asrIndex}`}
+															key={`${index}-${apIndex}-${asrIndex}`}
 															label={
 																<Typography
 																	variant='subtitle1'

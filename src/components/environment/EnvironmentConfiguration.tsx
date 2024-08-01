@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material';
+import { Stack, Tooltip } from '@mui/material';
 import {
 	putAvailabilityZone,
 	putAvailabilityZones,
@@ -9,7 +9,10 @@ import { putSubscriptions } from '../../store/environment/subscriptionSlice';
 import { putRegionalIPV4MF } from '../../store/environment/regionalIPV4Slice';
 import { putEncryptionAtHost } from '../../store/environment/encryptionHostSlice';
 import { putCustomVMSSTags } from '../../store/environment/customVMSSTagSlice';
-import { putCustomVMSSExtensions } from '../../store/environment/customVMSSExtensionSlice';
+import {
+	CustomVMSSExtensionPayload,
+	putCustomVMSSExtensions,
+} from '../../store/environment/customVMSSExtensionSlice';
 import { putTrustedLaunchMachineFunctions } from '../../store/environment/trustedLaunchMachineFunctionSlice';
 import { LabelText, Size, TooltipText, Url } from '../../enum/common.enum';
 import {
@@ -17,6 +20,8 @@ import {
 	CustomDataGridAndTextInputToggle,
 	CustomTextInput,
 	CustomTooltip,
+	parseIniText,
+	parseSectionProperty,
 } from '../Common';
 import {
 	availabilityZoneColumns,
@@ -31,18 +36,111 @@ import {
 import { putAcceleratedNetworkingEnabledMachineFunctions } from '../../store/environment/acceleratedNetworkingEnabledMachineFunctionSlice';
 import { putAcceleratedNetworkingInPlaceUpdate } from '../../store/environment/acceleratedNetworkingInPlaceUpdateSlice';
 import { putOutboundRules } from '../../store/environment/outboundRuleSlice';
-import { putAzureSLBs } from '../../store/environment/azureSLBSlice';
-import { putDiskProfiles } from '../../store/environment/diskProfileSlice';
+import {
+	AzureSLBPayload,
+	putAzureSLBs,
+} from '../../store/environment/azureSLBSlice';
+import { DiskProfilePayload, putDiskProfiles } from '../../store/environment/diskProfileSlice';
+import { useDispatch } from 'react-redux';
+import { useRef } from 'react';
+import { UploadFileOutlined } from '@mui/icons-material';
+import {
+	azureSLBPropertyHandler,
+	customVMSSExtensionPropertyHandler,
+	diskProfilePropertyHandler,
+} from '../../handlers/environment-handlers';
 
 function EnvironmentConfiguration() {
+	const dispatch = useDispatch();
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+	const handleUploadClick = () => {
+		fileInputRef.current!.click();
+	};
+
+	const handleFileChange = (event: any) => {
+		const file = event.target.files[0];
+		if (file && file.name.endsWith('.ini')) {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				const text = e.target!.result as string;
+				const parsedSections = parseIniText(text);
+				handleEnvironmentDispatch(parsedSections);
+			};
+			reader.onerror = (e) => {
+				console.error('Error reading file:', e.target!.error);
+			};
+			reader.readAsText(file);
+		} else {
+			alert(TooltipText.UPLOAD_FILE_INI);
+		}
+	};
+
+	const handleEnvironmentDispatch = (sections: string[][]) => {
+		let customVMSSExtensionPayload: CustomVMSSExtensionPayload[] = [];
+		let azureSLBPayload: AzureSLBPayload[] = [];
+		let diskProfilePayload: DiskProfilePayload[] = [];
+
+		console.log(sections);
+		sections.forEach((section) => {
+			// [CustomVMSSExtension.Foo]
+			if (section[0].startsWith('[CustomVMSSExtension.')) {
+				parseSectionProperty(
+					section,
+					customVMSSExtensionPayload.length,
+					'CustomVMSSExtension.',
+					customVMSSExtensionPropertyHandler,
+					customVMSSExtensionPayload
+				);
+			}
+			// [AzureSLB.Foo]
+			if (section[0].startsWith('[AzureSLB.')) {
+				parseSectionProperty(
+					section,
+					azureSLBPayload.length,
+					'AzureSLB.',
+					azureSLBPropertyHandler,
+					azureSLBPayload
+				);
+			} 
+			// [DiskProfile.Foo]
+			if (section[0].startsWith('[DiskProfile.')) {
+				parseSectionProperty(
+					section,
+					diskProfilePayload.length,
+					'DiskProfile.',
+					diskProfilePropertyHandler,
+					diskProfilePayload
+				);
+			}
+		});
+		dispatch(putCustomVMSSExtensions(customVMSSExtensionPayload));
+		dispatch(putAzureSLBs(azureSLBPayload));
+		dispatch(putDiskProfiles(diskProfilePayload));
+	};
+
 	return (
 		<>
-			<Stack direction='row' spacing={1} sx={{ my: 3 }}>
+			<Stack direction='row' spacing={2} sx={{ my: 3 }} alignItems='center'>
 				<h2>Environment Configuration</h2>
 				<CustomTooltip
 					link={Url.EAP_DOCUMENTATION}
 					size={Size.QUESTION_MARK_ICON_LARGE}
 				/>
+				<input
+					type='file'
+					ref={fileInputRef}
+					style={{ display: 'none' }}
+					accept='.ini'
+					onChange={handleFileChange}
+				/>
+				<Tooltip
+					title={TooltipText.UPLOAD_FILE}
+					onClick={handleUploadClick}
+					style={{ cursor: 'pointer' }}
+				>
+					<UploadFileOutlined />
+				</Tooltip>
 			</Stack>
 			<Stack direction='column' spacing={3}>
 				<AzureComputeManagerConfiguration />

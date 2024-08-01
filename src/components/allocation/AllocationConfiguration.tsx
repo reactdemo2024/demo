@@ -1,5 +1,5 @@
 import { Stack, Tooltip } from '@mui/material';
-import { CustomDataGrid, CustomTooltip } from '../Common';
+import { CustomDataGrid, CustomTooltip, parseIniText, parseSectionProperty } from '../Common';
 import {
 	autoscaleMetricColumns,
 	autoscaleProfileColumns,
@@ -65,59 +65,6 @@ function AllocationConfiguration() {
 		}
 	};
 
-	function parseIniText(text: string): Array<Array<string>> {
-		const lines = text.match(/[^\r\n]+/g) || []; // Split text into lines, excluding empty lines
-		const result: Array<Array<string>> = [];
-		let currentSection: Array<string> = [];
-
-		lines.forEach((line) => {
-			if (line.startsWith('[')) {
-				// Check if the line is a section header
-				if (currentSection.length > 0) {
-					// If there's an existing section, push it to the result before starting a new one
-					result.push(currentSection);
-				}
-				// Start a new section with the current line as the first element
-				currentSection = [line];
-			} else if (line.trim() !== '') {
-				// Add non-empty lines to the current section
-				currentSection.push(line);
-			}
-		});
-		// After the loop, add the last section if it's not empty
-		if (currentSection.length > 0) {
-			result.push(currentSection);
-		}
-
-		return result;
-	}
-
-	const parseSectionProperty = (
-		section: string[],
-		id: number,
-		title: string,
-		propertyHandler: any,
-		payload: any[]
-	) => {
-		const match = section[0].match(new RegExp(`\\[${title}(.+?)\\]`));
-		const name = match ? match[1] : '';
-		let currentPayload = {
-			id: id.toString(),
-			name: name,
-		};
-		section.forEach((line) => {
-			if (line.startsWith('[')) {
-				return;
-			}
-			const [key, value] = line.split('=');
-			const handler = propertyHandler[key];
-			if (handler) {
-				handler(value, currentPayload);
-			}
-		});
-		payload.push(currentPayload);
-	};
-
 	const handleAllocationDispatch = (sections: string[][]) => {
 		let machineFunctionPayload: MachineFunctionPayload[] = [];
 		let machineGroupPayload: MachineGroupPayload[] = [];
@@ -177,7 +124,6 @@ function AllocationConfiguration() {
 				);
 			}
 		});
-
 		dispatch(putMachineFunctions(machineFunctionPayload));
 		dispatch(putMachineGroups(machineGroupPayload));
 		dispatch(putAutoscaleProfiles(autoscaleProfilePayload));

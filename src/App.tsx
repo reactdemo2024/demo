@@ -22,7 +22,7 @@ import logo from './assets/logo-microsoft-96.png';
 
 export default function App() {
 	const [tabIsAllocation, setTabIsAllocation] = useState(true);
-	const [tabIsCollapsed, setTabIsCollapsed] = useState(false);
+	const [sidebarIsOpen, setSidebarIsOpen] = useState(true);
 
 	const handleTabChange = (e: any, tabIndex: number) => {
 		setTabIsAllocation(tabIndex === 0);
@@ -78,8 +78,8 @@ export default function App() {
 						<FormControlLabel
 							control={
 								<Switch
-									checked={tabIsCollapsed}
-									onChange={() => setTabIsCollapsed((prev) => !prev)}
+									checked={sidebarIsOpen}
+									onChange={() => setSidebarIsOpen((prev) => !prev)}
 									size='small'
 								/>
 							}
@@ -96,14 +96,14 @@ export default function App() {
 						sx={{ alignItems: 'stretch', minHeight: 'calc(100vh - 80px)' }}
 					>
 						<Slide
-							in={tabIsCollapsed}
+							in={sidebarIsOpen}
 							direction='right'
 							mountOnEnter
 							unmountOnExit
 						>
 							<Card
 								variant='outlined'
-								sx={{ minWidth: tabIsCollapsed ? '260px' : '0' }}
+								sx={{ minWidth: sidebarIsOpen ? '260px' : '0' }}
 							>
 								{tabIsAllocation ? (
 									<AllocationSidebar />

@@ -17,6 +17,7 @@ import {
 	MenuItem,
 	Select,
 	Stack,
+	styled,
 	TextField,
 	Tooltip,
 	Typography,
@@ -30,6 +31,7 @@ import {
 import { Size, TooltipText } from '../enum/common.enum';
 import { useDispatch, useSelector } from 'react-redux';
 import store from '../store/store';
+import { TreeItem } from '@mui/x-tree-view';
 
 export const customPropertiesColumn = [
 	{
@@ -100,6 +102,13 @@ interface CustomHeaderProps {
 	tooltip?: string;
 	link?: string;
 }
+
+export const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
+	'& .MuiTreeItem-content': {
+		padding: '1px 0px',
+		gap: '2px',
+	},
+}));
 
 export const CustomTooltip: FC<CustomTooltipProps> = ({
 	tooltip,
@@ -280,21 +289,18 @@ export const CustomDataGrid: FC<CustomDataGridProps> = ({
 	reducer,
 }) => {
 	const dispatch = useDispatch();
-	const state = store.getState();
-
-	let dataFromStore: any[];
-	if (reducer) {
-		const [rootReducer, subReducer] = reducer.includes('.')
-			? reducer.split('.')
-			: [reducer, undefined];
-		const dataFromRootStore = state[rootReducer as keyof typeof state] as any[];
-		dataFromStore =
-			subReducer && Object.keys(dataFromRootStore).length > 0
-				? dataFromRootStore[subReducer as keyof typeof dataFromRootStore]
-				: Array.isArray(dataFromRootStore)
-				? dataFromRootStore
-				: [];
-	} else dataFromStore = [];
+	const dataFromStore = useSelector((state: any) => {
+        if (!reducer) return [];
+        const [rootReducer, subReducer] = reducer.includes('.')
+            ? reducer.split('.')
+            : [reducer, undefined];
+        const dataFromRootStore = state[rootReducer as keyof typeof state] as any[];
+        return subReducer && Object.keys(dataFromRootStore).length > 0
+            ? dataFromRootStore[subReducer as keyof typeof dataFromRootStore]
+            : Array.isArray(dataFromRootStore)
+            ? dataFromRootStore
+            : [];
+    });
 
 	const [rows, setRows] = useState<GridRowsProp>(
 		dataFromStore as GridRowsProp[]
@@ -307,6 +313,12 @@ export const CustomDataGrid: FC<CustomDataGridProps> = ({
 	useEffect(() => {
 		dispatch(putDispatch(rows));
 	}, [dispatch, putDispatch, rows]);
+
+	// New useEffect to update rows when the relevant part of the state changes
+	useEffect(() => {
+		setRows(dataFromStore as GridRowsProp[]);
+		setId(dataFromStore[dataFromStore.length - 1]?.id + 1 || 0);
+	}, [dataFromStore]);
 
 	const handleDeleteRow = (id: GridRowId) => {
 		const updatedRows = rows.filter((row) => row.id !== id);
@@ -662,4 +674,57 @@ export const CustomCheckbox: FC<CustomCheckboxProps> = ({
 			/>
 		</>
 	);
+};
+
+export function parseIniText(text: string): Array<Array<string>> {
+	const lines = text.match(/[^\r\n]+/g) || []; // Split text into lines, excluding empty lines
+	const result: Array<Array<string>> = [];
+	let currentSection: Array<string> = [];
+
+	lines.forEach((line) => {
+		if (line.startsWith('[')) {
+			// Check if the line is a section header
+			if (currentSection.length > 0) {
+				// If there's an existing section, push it to the result before starting a new one
+				result.push(currentSection);
+			}
+			// Start a new section with the current line as the first element
+			currentSection = [line];
+		} else if (line.trim() !== '') {
+			// Add non-empty lines to the current section
+			currentSection.push(line);
+		}
+	});
+	// After the loop, add the last section if it's not empty
+	if (currentSection.length > 0) {
+		result.push(currentSection);
+	}
+
+	return result;
+}
+
+export const parseSectionProperty = (
+	section: string[],
+	id: number,
+	title: string,
+	propertyHandler: any,
+	payload: any[]
+) => {
+	const match = section[0].match(new RegExp(`\\[${title}(.+?)\\]`));
+	const name = match ? match[1] : '';
+	let currentPayload = {
+		id: id.toString(),
+		name: name,
+	};
+	section.forEach((line) => {
+		if (line.startsWith('[')) {
+			return;
+		}
+		const [key, value] = line.split('=');
+		const handler = propertyHandler[key];
+		if (handler) {
+			handler(value, currentPayload);
+		}
+	});
+	payload.push(currentPayload);
 };

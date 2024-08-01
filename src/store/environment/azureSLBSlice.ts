@@ -4,8 +4,8 @@ export interface AzureSLBPayload {
     id: number;
     name: string;
     machineFunction: string;
-    numberOfIPs: number;
-    outboundRules: string;
+    numberOfIPs: string;
+    outboundRules: string[];
 }
 
 const azureSLBSlice = createSlice({

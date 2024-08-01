@@ -140,11 +140,14 @@ const generateEnvironmentIni = () => {
 	customVMSSExtensions?.forEach((cve) => {
 		result += `\n[CustomVMSSExtension.${cve.name}]\n`;
 		Object.keys(cve).forEach((key) => {
-			if (key !== 'name' && key !== 'id') {
+			if (key !== 'name' && key !== 'id' && key !== 'osType') {
 				const formatKey = key.charAt(0).toUpperCase() + key.slice(1);
 				result += cve[key as keyof CustomVMSSExtensionPayload]
 					? `${formatKey}=${cve[key as keyof CustomVMSSExtensionPayload]}\n`
 					: '';
+			}
+			if (key === 'osType') {
+				result += `OSType=${cve.osType}\n`;
 			}
 		});
 	});
@@ -284,6 +287,7 @@ function EnvironmentSidebar() {
 					left: 0,
 					ml: '25px',
 					mb: '20px',
+					ariahidden: 'false', // prevents screen reader error
 				}}
 			>
 				Generate Environment.ini
