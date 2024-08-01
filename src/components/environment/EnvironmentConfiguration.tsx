@@ -35,7 +35,7 @@ import {
 } from '../../inputs/environment-columns';
 import { putAcceleratedNetworkingEnabledMachineFunctions } from '../../store/environment/acceleratedNetworkingEnabledMachineFunctionSlice';
 import { putAcceleratedNetworkingInPlaceUpdate } from '../../store/environment/acceleratedNetworkingInPlaceUpdateSlice';
-import { putOutboundRules } from '../../store/environment/outboundRuleSlice';
+import { OutboundRulePayload, putOutboundRules } from '../../store/environment/outboundRuleSlice';
 import {
 	AzureSLBPayload,
 	putAzureSLBs,
@@ -48,6 +48,7 @@ import {
 	azureSLBPropertyHandler,
 	customVMSSExtensionPropertyHandler,
 	diskProfilePropertyHandler,
+	outboundRulePropertyHandler,
 } from '../../handlers/environment-handlers';
 
 function EnvironmentConfiguration() {
@@ -78,10 +79,10 @@ function EnvironmentConfiguration() {
 
 	const handleEnvironmentDispatch = (sections: string[][]) => {
 		let customVMSSExtensionPayload: CustomVMSSExtensionPayload[] = [];
+		let outboundRulePayload: OutboundRulePayload[] = [];
 		let azureSLBPayload: AzureSLBPayload[] = [];
 		let diskProfilePayload: DiskProfilePayload[] = [];
 
-		console.log(sections);
 		sections.forEach((section) => {
 			// [CustomVMSSExtension.Foo]
 			if (section[0].startsWith('[CustomVMSSExtension.')) {
@@ -91,6 +92,16 @@ function EnvironmentConfiguration() {
 					'CustomVMSSExtension.',
 					customVMSSExtensionPropertyHandler,
 					customVMSSExtensionPayload
+				);
+			}
+			// [OutboundRule.Foo]
+			if (section[0].startsWith('[OutboundRule.')) {
+				parseSectionProperty(
+					section,
+					outboundRulePayload.length,
+					'OutboundRule.',
+					outboundRulePropertyHandler,
+					outboundRulePayload
 				);
 			}
 			// [AzureSLB.Foo]
@@ -115,6 +126,7 @@ function EnvironmentConfiguration() {
 			}
 		});
 		dispatch(putCustomVMSSExtensions(customVMSSExtensionPayload));
+		dispatch(putOutboundRules(outboundRulePayload));
 		dispatch(putAzureSLBs(azureSLBPayload));
 		dispatch(putDiskProfiles(diskProfilePayload));
 	};

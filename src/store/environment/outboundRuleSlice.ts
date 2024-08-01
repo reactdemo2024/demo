@@ -3,8 +3,8 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 export interface OutboundRulePayload {
     id: number;
     name: string;
-    allocatedOutboundPorts: number;
-    idleTimeoutInMinutes: number;
+    allocatedOutboundPorts: string;
+    idleTimeoutInMinutes: string;
     enableTcpReset: boolean;
     protocol: string;
 }
