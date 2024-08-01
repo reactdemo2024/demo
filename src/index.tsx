@@ -2,7 +2,11 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import App from './App';
 import './App.css';
-import { BrowserRouter} from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material';
+import { CustomTheme } from './components/Common';
+import store from './store/store';
+import { Provider } from 'react-redux';
 
 // import reportWebVitals from "./reportWebVitals"
 // import * as serviceWorker from "./serviceWorker"
@@ -14,7 +18,11 @@ const root = ReactDOM.createRoot(container);
 root.render(
 	<BrowserRouter basename={process.env.PUBLIC_URL}>
 		<React.StrictMode>
-			<App />
+			<Provider store={store}>
+				<ThemeProvider theme={CustomTheme}>
+					<App />
+				</ThemeProvider>
+			</Provider>
 		</React.StrictMode>
 	</BrowserRouter>
 );

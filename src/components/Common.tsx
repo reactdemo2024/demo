@@ -12,6 +12,7 @@ import { FC, useEffect, useState } from 'react';
 import {
 	Button,
 	Checkbox,
+	createTheme,
 	FormControlLabel,
 	IconButton,
 	MenuItem,
@@ -109,6 +110,25 @@ export const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
 		gap: '2px',
 	},
 }));
+
+export const CustomTheme = createTheme({
+	components: {
+		MuiMenuItem: {
+			styleOverrides: {
+				root: {
+					height: 32,
+				},
+			},
+		},
+		MuiAutocomplete: {
+			styleOverrides: {
+				option: {
+					height: 32,
+				},
+			},
+		},
+	},
+});
 
 export const CustomTooltip: FC<CustomTooltipProps> = ({
 	tooltip,
