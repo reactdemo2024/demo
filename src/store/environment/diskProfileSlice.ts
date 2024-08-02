@@ -14,7 +14,7 @@ export interface DiskProfilePayload {
     eStorageAccountType: string;
     eCachingType: string;
     eIsPersistent: boolean;
-    customProperties: string;
+    customProperties?: string;
 }
 
 const diskProfileSlice = createSlice({

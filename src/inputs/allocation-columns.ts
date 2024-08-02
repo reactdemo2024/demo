@@ -1,4 +1,3 @@
-import { customPropertiesColumn } from "../components/Common";
 import { MetricAggregation, Operator, SamplingType, ScaleDirection, ScaleType } from "../enum/allocation.enum";
 import { TooltipText } from "../enum/common.enum";
 
@@ -46,7 +45,6 @@ export const machineFunctionColumns = [
             text: TooltipText.MULTI_SELECT_OPTIONS
         }
     },
-    ...customPropertiesColumn
 ];
 
 export const machineGroupColumns = [
@@ -66,7 +64,6 @@ export const machineGroupColumns = [
         field: 'sku',
         headerName: 'SKU',
     },
-    ...customPropertiesColumn
 ];
 
 export const autoscaleProfileColumns = [
@@ -97,7 +94,6 @@ export const autoscaleProfileColumns = [
             text: TooltipText.MULTI_SELECT_OPTIONS
         },
     },
-    ...customPropertiesColumn
 ];
 
 export const autoscaleRuleColumns = [
@@ -150,7 +146,6 @@ export const autoscaleRuleColumns = [
             text: TooltipText.SINGLE_SELECT_OPTION
         }
     },
-    ...customPropertiesColumn
 ];
 
 export const autoscaleMetricColumns = [
@@ -186,5 +181,4 @@ export const autoscaleMetricColumns = [
         field: 'metricExcludeFilters',
         headerName: 'Exclude Filters',
     },
-    ...customPropertiesColumn
 ];

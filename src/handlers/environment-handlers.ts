@@ -3,19 +3,6 @@ import { AzureSLBPayload } from "../store/environment/azureSLBSlice";
 import { CustomVMSSExtensionPayload } from "../store/environment/customVMSSExtensionSlice";
 import { DiskProfilePayload } from "../store/environment/diskProfileSlice";
 import { OutboundRulePayload } from "../store/environment/outboundRuleSlice";
-import { ZoneBalancePayload } from "../store/environment/zoneBalanceSlice";
-
-// TODO: add custom properties handler too all that need
-export const zoneBalancePropertyHandler: {
-    [key: string]: (
-        value: string,
-        payload: Partial<ZoneBalancePayload>
-    ) => void;
-} = {
-    MachineFunctionName: (value, payload) =>
-        (payload.machineFunctionName = value),
-    Enabled: (value, payload) => (payload.enabled = value.toLowerCase() === 'true'),
-};
 
 export const customVMSSExtensionPropertyHandler: {
     [key: string]: (
@@ -63,13 +50,32 @@ export const azureSLBPropertyHandler: {
     OutboundRules: (value, payload) => (payload.outboundRules = value.split(',')),
 };
 
-// TODO: disk profile parsed differently -- might need to redo how this is stored? idk or just do manual like with name
 export const diskProfilePropertyHandler: {
     [key: string]: (
         value: string,
         payload: Partial<DiskProfilePayload>
     ) => void;
 } = {
-    MachineFunction: (value, payload) =>
-        (payload.machineFunctions = value),
+    MachineFunction: (value, payload) => {
+        payload.machineFunctions = value;
+    },
+    C: (value, payload) => {
+        const [diskSize, storageAccountType] = value.split(',');
+        payload.cDiskSize = diskSize;
+        payload.cStorageAccountType = storageAccountType;
+    },
+    D: (value, payload) => {
+        const [diskSize, storageAccountType, cachingType, isPersistent] = value.split(',');
+        payload.dDiskSize = diskSize;
+        payload.dStorageAccountType = storageAccountType;
+        payload.dCachingType = cachingType;
+        payload.dIsPersistent = isPersistent.toLowerCase() === 'true';
+    },
+    E: (value, payload) => {
+        const [diskSize, storageAccountType, cachingType, isPersistent] = value.split(',');
+        payload.eDiskSize = diskSize;
+        payload.eStorageAccountType = storageAccountType;
+        payload.eCachingType = cachingType;
+        payload.eIsPersistent = isPersistent.toLowerCase() === 'true';
+    },
 };

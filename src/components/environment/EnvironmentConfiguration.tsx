@@ -5,17 +5,11 @@ import {
 	putAvailabilityZones,
 } from '../../store/environment/availabilityZoneSlice';
 import { putMaintenanceControl } from '../../store/environment/maintenanceControlSlice';
-import {
-	putZoneBalances,
-} from '../../store/environment/zoneBalanceSlice';
-import {
-	putSubscriptions,
-} from '../../store/environment/subscriptionSlice';
+import { putZoneBalances } from '../../store/environment/zoneBalanceSlice';
+import { putSubscriptions } from '../../store/environment/subscriptionSlice';
 import { putRegionalIPV4MF } from '../../store/environment/regionalIPV4Slice';
 import { putEncryptionAtHost } from '../../store/environment/encryptionHostSlice';
-import {
-	putCustomVMSSTags,
-} from '../../store/environment/customVMSSTagSlice';
+import { putCustomVMSSTags } from '../../store/environment/customVMSSTagSlice';
 import {
 	CustomVMSSExtensionPayload,
 	putCustomVMSSExtensions,
@@ -89,10 +83,10 @@ function EnvironmentConfiguration() {
 		} else {
 			alert(TooltipText.UPLOAD_FILE_INI);
 		}
-		
+
 		if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
+			fileInputRef.current.value = '';
+		}
 	};
 
 	const handleEnvironmentDispatch = (sections: string[][]) => {
@@ -137,8 +131,11 @@ function EnvironmentConfiguration() {
 					azureSLBPayload
 				);
 			}
-			// [DiskProfile.Foo]
-			if (section[0].startsWith('[DiskProfile.')) {
+			// C=<Disk Size in GiB>, <Storage Account Type>
+			// <DriveLetter/LUN>=<Disk Size in GiB>, <Storage Account Type>, <Caching Type>, <IsPersistent>
+			// <Drive Letter/LUN>=TemporaryStorage
+			if (section[0].startsWith('[DiskProfile.'))
+				// [DiskProfile.Foo]
 				parseSectionProperty(
 					section,
 					diskProfilePayload.length,
@@ -146,7 +143,6 @@ function EnvironmentConfiguration() {
 					diskProfilePropertyHandler,
 					diskProfilePayload
 				);
-			}
 		});
 
 		dispatch(putCustomVMSSExtensions(customVMSSExtensionPayload));
@@ -154,10 +150,8 @@ function EnvironmentConfiguration() {
 		dispatch(putAzureSLBs(azureSLBPayload));
 		dispatch(putDiskProfiles(diskProfilePayload));
 
-		// dispatch for AzureComputeManager
-		console.log(azureComputeManagerPayload);
-
-		const availabilityZonePayload: AvailabilityZonePayload = azureComputeManagerPayload.availabilityZonePayload;
+		const availabilityZonePayload: AvailabilityZonePayload =
+			azureComputeManagerPayload.availabilityZonePayload;
 		if (availabilityZonePayload?.availabilityZones) {
 			dispatch(putAvailabilityZones(availabilityZonePayload.availabilityZones));
 		} else {
@@ -165,17 +159,35 @@ function EnvironmentConfiguration() {
 				putAvailabilityZone(availabilityZonePayload.availabilityZone || '')
 			);
 		}
-
 		dispatch(putZoneBalances(azureComputeManagerPayload.zoneBalancePayload));
-		dispatch(putMaintenanceControl(azureComputeManagerPayload.maintenanceControlPayload));
+		dispatch(
+			putMaintenanceControl(
+				azureComputeManagerPayload.maintenanceControlPayload
+			)
+		);
 		dispatch(putSubscriptions(azureComputeManagerPayload.subscriptionPayload));
-		dispatch(putEncryptionAtHost(azureComputeManagerPayload.encryptionAtHostPayload));
+		dispatch(
+			putEncryptionAtHost(azureComputeManagerPayload.encryptionAtHostPayload)
+		);
 		dispatch(putRegionalIPV4MF(azureComputeManagerPayload.regionalIPV4Payload));
-		dispatch(putCustomVMSSTags(azureComputeManagerPayload.customVMSSTagPayload));
-		dispatch(putTrustedLaunchMachineFunctions(azureComputeManagerPayload.trustedLaunchMachineFunctionPayload));
-		dispatch(putAcceleratedNetworkingEnabledMachineFunctions(azureComputeManagerPayload.acceleratedNetworkingEnabledMachineFunctionPayload));
-		dispatch(putAcceleratedNetworkingInPlaceUpdate(azureComputeManagerPayload.acceleratedNetworkingInPlaceUpdatePayload));
-		
+		dispatch(
+			putCustomVMSSTags(azureComputeManagerPayload.customVMSSTagPayload)
+		);
+		dispatch(
+			putTrustedLaunchMachineFunctions(
+				azureComputeManagerPayload.trustedLaunchMachineFunctionPayload
+			)
+		);
+		dispatch(
+			putAcceleratedNetworkingEnabledMachineFunctions(
+				azureComputeManagerPayload.acceleratedNetworkingEnabledMachineFunctionPayload
+			)
+		);
+		dispatch(
+			putAcceleratedNetworkingInPlaceUpdate(
+				azureComputeManagerPayload.acceleratedNetworkingInPlaceUpdatePayload
+			)
+		);
 	};
 
 	return (

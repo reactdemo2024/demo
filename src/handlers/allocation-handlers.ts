@@ -5,8 +5,6 @@ import { AutoscaleRulePayload } from "../store/allocation/autoscaleRuleSlice";
 import { MachineFunctionPayload } from "../store/allocation/machineFunctionSlice";
 import { MachineGroupPayload } from "../store/allocation/machineGroupSlice";
 
-// TODO: add custom properties handler too all that need
-
 export const machineFunctionPropertyHandler: {
     [key: string]: (
         value: string,

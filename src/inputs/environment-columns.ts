@@ -228,5 +228,4 @@ export const diskProfileColumns = [
         type: 'boolean',
         headerName: 'Persistent for E Drive?',
     },
-    ...customPropertiesColumn
 ];
