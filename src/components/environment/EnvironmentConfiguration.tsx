@@ -89,6 +89,10 @@ function EnvironmentConfiguration() {
 		} else {
 			alert(TooltipText.UPLOAD_FILE_INI);
 		}
+		
+		if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
 	};
 
 	const handleEnvironmentDispatch = (sections: string[][]) => {

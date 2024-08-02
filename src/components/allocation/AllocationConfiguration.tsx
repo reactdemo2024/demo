@@ -63,6 +63,10 @@ function AllocationConfiguration() {
 		} else {
 			alert(TooltipText.UPLOAD_FILE_INI);
 		}
+
+		if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
 	};
 
 	const handleAllocationDispatch = (sections: string[][]) => {

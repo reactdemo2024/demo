@@ -599,8 +599,10 @@ export const CustomDataGridAndTextInputToggle: FC<
 
 	// useEffect to update rows when the relevant part of the state changes
 	useEffect(() => {
-		setRows(dataFromStore as GridRowsProp[]);
-		setId(dataFromStore[dataFromStore.length - 1]?.id + 1 || 0);
+		if (dataFromStore?.length > 0) {
+			setRows(dataFromStore as GridRowsProp[]);
+			setId(dataFromStore[dataFromStore.length - 1]?.id + 1 || 0);
+		}
 	}, [dataFromStore]);
 
 	const handleDeleteRow = (id: GridRowId) => {
