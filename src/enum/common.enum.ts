@@ -48,3 +48,7 @@ export enum Color {
 export enum Url {
     EAP_DOCUMENTATION = 'https://eng.ms/docs/products/autopilot/autopilot/eap/advanced-setup',
 }
+
+export enum Environment {
+    ALL_MACHINE_FUNCTIONS = '*',
+}

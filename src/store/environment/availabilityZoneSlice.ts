@@ -7,8 +7,8 @@ export interface AvailabilityZonePayload {
 
 export interface AvailabilityZonesPayload {
     id: string;
-    machineFunctionName?: string;
-    availabilityZone?: string;
+    machineFunctionName: string;
+    availabilityZone: string;
 }
 
 const availabilityZoneSlice = createSlice({

@@ -1,14 +1,21 @@
 import { Stack, Tooltip } from '@mui/material';
 import {
+	AvailabilityZonePayload,
 	putAvailabilityZone,
 	putAvailabilityZones,
 } from '../../store/environment/availabilityZoneSlice';
 import { putMaintenanceControl } from '../../store/environment/maintenanceControlSlice';
-import { putZoneBalances } from '../../store/environment/zoneBalanceSlice';
-import { putSubscriptions } from '../../store/environment/subscriptionSlice';
+import {
+	putZoneBalances,
+} from '../../store/environment/zoneBalanceSlice';
+import {
+	putSubscriptions,
+} from '../../store/environment/subscriptionSlice';
 import { putRegionalIPV4MF } from '../../store/environment/regionalIPV4Slice';
 import { putEncryptionAtHost } from '../../store/environment/encryptionHostSlice';
-import { putCustomVMSSTags } from '../../store/environment/customVMSSTagSlice';
+import {
+	putCustomVMSSTags,
+} from '../../store/environment/customVMSSTagSlice';
 import {
 	CustomVMSSExtensionPayload,
 	putCustomVMSSExtensions,
@@ -22,6 +29,7 @@ import {
 	CustomTooltip,
 	parseIniText,
 	parseSectionProperty,
+	parseAzureComputeManager,
 } from '../Common';
 import {
 	availabilityZoneColumns,
@@ -35,12 +43,18 @@ import {
 } from '../../inputs/environment-columns';
 import { putAcceleratedNetworkingEnabledMachineFunctions } from '../../store/environment/acceleratedNetworkingEnabledMachineFunctionSlice';
 import { putAcceleratedNetworkingInPlaceUpdate } from '../../store/environment/acceleratedNetworkingInPlaceUpdateSlice';
-import { OutboundRulePayload, putOutboundRules } from '../../store/environment/outboundRuleSlice';
+import {
+	OutboundRulePayload,
+	putOutboundRules,
+} from '../../store/environment/outboundRuleSlice';
 import {
 	AzureSLBPayload,
 	putAzureSLBs,
 } from '../../store/environment/azureSLBSlice';
-import { DiskProfilePayload, putDiskProfiles } from '../../store/environment/diskProfileSlice';
+import {
+	DiskProfilePayload,
+	putDiskProfiles,
+} from '../../store/environment/diskProfileSlice';
 import { useDispatch } from 'react-redux';
 import { useRef } from 'react';
 import { UploadFileOutlined } from '@mui/icons-material';
@@ -78,12 +92,17 @@ function EnvironmentConfiguration() {
 	};
 
 	const handleEnvironmentDispatch = (sections: string[][]) => {
+		let azureComputeManagerPayload: any = {};
 		let customVMSSExtensionPayload: CustomVMSSExtensionPayload[] = [];
 		let outboundRulePayload: OutboundRulePayload[] = [];
 		let azureSLBPayload: AzureSLBPayload[] = [];
 		let diskProfilePayload: DiskProfilePayload[] = [];
 
 		sections.forEach((section) => {
+			// [AzureComputeManager] parses and dispatch with a different function
+			if (section[0].startsWith('[AzureComputeManager]')) {
+				azureComputeManagerPayload = parseAzureComputeManager(section);
+			}
 			// [CustomVMSSExtension.Foo]
 			if (section[0].startsWith('[CustomVMSSExtension.')) {
 				parseSectionProperty(
@@ -113,7 +132,7 @@ function EnvironmentConfiguration() {
 					azureSLBPropertyHandler,
 					azureSLBPayload
 				);
-			} 
+			}
 			// [DiskProfile.Foo]
 			if (section[0].startsWith('[DiskProfile.')) {
 				parseSectionProperty(
@@ -125,10 +144,34 @@ function EnvironmentConfiguration() {
 				);
 			}
 		});
+
 		dispatch(putCustomVMSSExtensions(customVMSSExtensionPayload));
 		dispatch(putOutboundRules(outboundRulePayload));
 		dispatch(putAzureSLBs(azureSLBPayload));
 		dispatch(putDiskProfiles(diskProfilePayload));
+
+		// dispatch for AzureComputeManager
+		console.log(azureComputeManagerPayload);
+
+		const availabilityZonePayload: AvailabilityZonePayload = azureComputeManagerPayload.availabilityZonePayload;
+		if (availabilityZonePayload?.availabilityZones) {
+			dispatch(putAvailabilityZones(availabilityZonePayload.availabilityZones));
+		} else {
+			dispatch(
+				putAvailabilityZone(availabilityZonePayload.availabilityZone || '')
+			);
+		}
+
+		dispatch(putZoneBalances(azureComputeManagerPayload.zoneBalancePayload));
+		dispatch(putMaintenanceControl(azureComputeManagerPayload.maintenanceControlPayload));
+		dispatch(putSubscriptions(azureComputeManagerPayload.subscriptionPayload));
+		dispatch(putEncryptionAtHost(azureComputeManagerPayload.encryptionAtHostPayload));
+		dispatch(putRegionalIPV4MF(azureComputeManagerPayload.regionalIPV4Payload));
+		dispatch(putCustomVMSSTags(azureComputeManagerPayload.customVMSSTagPayload));
+		dispatch(putTrustedLaunchMachineFunctions(azureComputeManagerPayload.trustedLaunchMachineFunctionPayload));
+		dispatch(putAcceleratedNetworkingEnabledMachineFunctions(azureComputeManagerPayload.acceleratedNetworkingEnabledMachineFunctionPayload));
+		dispatch(putAcceleratedNetworkingInPlaceUpdate(azureComputeManagerPayload.acceleratedNetworkingInPlaceUpdatePayload));
+		
 	};
 
 	return (

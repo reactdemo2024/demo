@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface CustomVMSSTagPayload {
-    id: number;
+    id: string;
     jsonName: string;
     machineFunctionName: string;
     machineGroupName: string;

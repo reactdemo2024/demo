@@ -3,9 +3,19 @@ import { AzureSLBPayload } from "../store/environment/azureSLBSlice";
 import { CustomVMSSExtensionPayload } from "../store/environment/customVMSSExtensionSlice";
 import { DiskProfilePayload } from "../store/environment/diskProfileSlice";
 import { OutboundRulePayload } from "../store/environment/outboundRuleSlice";
+import { ZoneBalancePayload } from "../store/environment/zoneBalanceSlice";
 
 // TODO: add custom properties handler too all that need
-// TODO: azure compute manager is parsed differently, needs to be parsed manually or just do normally and have to make a bunch of dispatch
+export const zoneBalancePropertyHandler: {
+    [key: string]: (
+        value: string,
+        payload: Partial<ZoneBalancePayload>
+    ) => void;
+} = {
+    MachineFunctionName: (value, payload) =>
+        (payload.machineFunctionName = value),
+    Enabled: (value, payload) => (payload.enabled = value.toLowerCase() === 'true'),
+};
 
 export const customVMSSExtensionPropertyHandler: {
     [key: string]: (

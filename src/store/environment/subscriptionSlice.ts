@@ -2,10 +2,10 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface SubscriptionPayload {
     id: string;
-    subscriptionIds?: string;
+    subscriptionIds: string;
     environment?: string;
     cluster?: string;
-    customProperties: string;
+    customProperties?: string;
 }
 
 const subscriptionSlice = createSlice({
